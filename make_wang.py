@@ -27,6 +27,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 pdfmetrics.registerFont(TTFont('CJK', os.path.join(HERE, 'fonts', 'NotoSerifTC-subset.ttf')))
 SIGNATURE = 'C. Scott Ananian · February 2019'
+SIGNATURE_FIB = 'C. Scott Ananian · October 2026'     # page 2: the Fibonacci design is new
 
 # ------------------------------------------------------------------ palette
 # tile colors on the wall, by eye from photographs: silk is glazed ceramic,
@@ -372,8 +373,9 @@ def draw_wall(c, view, clip, built=True, grout=None):
     c.restoreState()
 
 
-def draw_frame(c):
-    """Border: the whole designed 21 x 27 tiling (the wall shows the top 15 rows)."""
+def draw_frame(c, painter=None):
+    """Border: by default the whole designed 21 x 27 prime tiling (the wall
+    shows the top 15 rows); `painter(c, view, clip)` draws something else."""
     s = (H - 2 * OUT) / GRID.h
     view = View(OUT, H - OUT, s, -0.5, -0.5)
     c.saveState()
@@ -381,7 +383,10 @@ def draw_frame(c):
     p.rect(OUT, OUT, W - 2 * OUT, H - 2 * OUT)
     p.rect(IN, IN, W - 2 * IN, H - 2 * IN)
     c.clipPath(p, stroke=0, fill=0, fillMode=FILL_EVEN_ODD)
-    draw_wall(c, view, (OUT, OUT, W - OUT, H - OUT), grout=BORDER_GROUT)
+    if painter:
+        painter(c, view, (OUT, OUT, W - OUT, H - OUT))
+    else:
+        draw_wall(c, view, (OUT, OUT, W - OUT, H - OUT), grout=BORDER_GROUT)
     c.restoreState()
     c.setStrokeColor(SLATE)
     c.setLineWidth(1.2)
@@ -448,13 +453,9 @@ def ornament(c, cx, cy):
     draw_wang_tile(c, t, View(cx, cy, 15), 0, 0)
 
 
-def build(path='wang-tiling.pdf', gap=0.0):
-    """Draw the page; `gap` is extra space above each section heading.
+def page_one(c, gap=0.0):
+    """The prime sieve.  `gap` is extra space above each section heading.
     Returns the y of the bottom of the footnote."""
-    c = canvas.Canvas(path, pagesize=letter)
-    c.setTitle('Computing with Tiles')
-    c.setAuthor('C. Scott Ananian')
-    c.setSubject('A wall of Wang tiles that sieves for primes')
     c.setFillColor(PAPER)
     c.rect(0, 0, W, H, stroke=0, fill=1)
     draw_frame(c)
@@ -592,13 +593,151 @@ def build(path='wang-tiling.pdf', gap=0.0):
               'Addition after Grünbaum & Shephard, Tilings and Patterns, §11.4.',
            accent=ACCENT, signature=SIGNATURE)
     c.showPage()
-    c.save()
     return fb
 
 
+# ------------------------------------------------------------------ page 2: Fibonacci
+import fibtiles as ft
+
+FIB_ROWS = ft.forced(32, 28)      # extra columns on the right keep the stagger even
+
+
+def fib_regions(rows):
+    regions = {}
+    for base, run in ft.lay_tiles(rows):
+        regions.setdefault(GLAZE_OF_BASE[base], []).append(ft.piece_polygon(run))
+    for j, row in enumerate(rows):                     # basalt border triangles
+        for i, t in enumerate(row):
+            for side in ('top', 'left'):
+                if t.edge(side) == 0:
+                    tri = np.array(side_triangle(side, i, j))
+                    m = tri.mean(0)
+                    regions.setdefault('basalt', []).append([tuple(m + 0.9 * (p - m)) for p in tri])
+    lines = [ln for j, row in enumerate(rows) for i, t in enumerate(row)
+             for ln in tile_lines(t, i, j)]
+    return regions, lines
+
+
+FIB_REGIONS, FIB_LINES = fib_regions(FIB_ROWS)
+
+
+def draw_fib(c, view, clip, grout=BORDER_GROUT):
+    """The Fibonacci tiling as it could be laid in 2" x 8" tile, clipped."""
+    x0, y0, x1, y1 = clip
+    c.saveState()
+    p = c.beginPath()
+    p.rect(x0, y0, x1 - x0, y1 - y0)
+    c.clipPath(p, stroke=0, fill=0)
+    c.setFillColor(grout)
+    c.rect(x0, y0, x1 - x0, y1 - y0, stroke=0, fill=1)
+    fill_regions(c, {GLAZE[g]: polys for g, polys in FIB_REGIONS.items()}, view)
+    draw_lines_by_glaze(c, FIB_REGIONS, FIB_LINES, view)
+    c.restoreState()
+
+
+def fib_ornament(c, cx, cy):
+    draw_wang_tile(c, ft.TILES[2], View(cx, cy, 15), 0, 0)      # F, like p
+
+
+def page_two(c, gap=0.0):
+    c.setFillColor(PAPER)
+    c.rect(0, 0, W, H, stroke=0, fill=1)
+    draw_frame(c, draw_fib)
+    c.setFillColor(PAPER)
+    c.rect(IN + 4.5, IN + 4.5, W - 2 * IN - 9, H - 2 * IN - 9, stroke=0, fill=1)
+    title_block(c, 'FIBONACCI IN TILE',
+                'a second wall of Wang tiles, not yet built: each number the sum of the two before',
+                accent=ACCENT, ornament=fib_ornament)
+
+    # V. Adding again and again ---------------------------------------
+    y = 650 - gap
+    heading(c, 'V', 'Adding, again and again', X0, y, CW, accent=ACCENT)
+    yb = para(c, 'Run the adding machine of section II over and over, and the tiles '
+                 'generate the Fibonacci numbers, each the sum of the two before.<super>†</super> '
+                 'Again the top and left edges are black and the tiling is forced; '
+                 '<b>F′</b> and <b>F″</b> in the corner mark the first two numbers, 1 and 2. '
+                 'Every <b>F</b> sends a thick ray straight down. A long charcoal diagonal '
+                 'leaves the corner at 45°, and where it meets the ray of the <b>F</b> at '
+                 'column <i>n</i>, at depth <i>n</i>, the ray turns and runs right to the ray '
+                 'of the next <b>F</b>, at column <i>m</i>. There a charcoal staircase with a '
+                 'thin etched step climbs back at 45°, rising <i>n</i> rows as it moves '
+                 '<i>n</i> columns right, and reaches the top at column '
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>.', X0, y - 12, CW, small)
+    cols, nrows = 22, 14
+    fs = CW / cols
+    fy = yb - 20 - gap
+    view = View(X0 + fs / 2, fy - fs / 2, fs)
+    rect = (X0, fy - nrows * fs, X0 + cols * fs, fy)
+    draw_fib(c, view, rect)
+    c.saveState()
+    clip = c.beginPath()
+    clip.rect(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1])
+    c.clipPath(clip, stroke=0, fill=0)
+    draw_grid(c, view, cols, nrows)
+    c.restoreState()
+    c.setStrokeColor(SLATE)
+    c.setLineWidth(0.6)
+    c.rect(rect[0], rect[1], rect[2] - rect[0], rect[3] - rect[1])
+    for i in range(cols):
+        px, _ = view((i, 0))
+        isF = FIB_ROWS[0][i].name.startswith('F')
+        c.setFont('Serif-Bold' if isF else 'Serif', 7.2 if isF else 6.4)
+        c.setFillColor(ACCENT if isF else GREY_T)
+        c.drawCentredString(px, fy + 3, str(i + 1))
+    c.setFont('Serif-Italic', 7.4)
+    c.setFillColor(GREY_T)
+    c.drawCentredString(X0 + CW / 2, rect[1] - 10,
+                        'as it could be laid in 2″ × 8″ subway tile: down-right on and below '
+                        'the long diagonal, up-right above it')
+
+    # VI. The 18 tiles ------------------------------------------------
+    y = rect[1] - 18 - 15 - gap
+    heading(c, 'VI', 'The 18 tiles', X0, y, CW, accent=ACCENT)
+    n = len(ft.TILES)
+    ts = 20.0
+    tg = (CW - n * ts) / (n - 1)
+    ty = y - 12
+    for k, t in enumerate(ft.TILES):
+        cx = X0 + k * (ts + tg) + ts / 2
+        draw_wang_tile(c, t, View(cx, ty - ts / 2, ts), 0, 0)
+        if t.name:
+            c.setFont('Serif-Bold', 7)
+            c.setFillColor(SLATE)
+            c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
+    yb = para(c, 'Thirteen edge types; edges must match. With the top and left edges black, '
+                 'these tiles fill the quarter plane in exactly one way, and since the '
+                 'Fibonacci numbers spread ever further apart, that tiling is aperiodic. '
+                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
+                 'at column 3 instead, and the same machinery produces the Lucas numbers '
+                 '1, 3, 4, 7, 11, 18, 29.', X0, ty - ts - 14, CW, small)
+    fb = para(c, '<super>†</super> After Grünbaum &amp; Shephard, <i>Tilings and Patterns</i>, '
+                 'Fig. 11.4.2, which has three misprints: its list of tiles leaves out the one '
+                 'that continues the diagonal, its example drops two of the “6” edge labels in '
+                 'column 3, and its caption counts 11 among the Fibonacci numbers.',
+              X0, yb - 6, CW, foot)
+    if fb < 80:
+        print('warning: page 2 footnote runs into the footer by %.1f pt' % (80 - fb))
+    footer(c, 'Tiles after Grünbaum & Shephard, corrected; the layout in tile is greedy, '
+              'with whole tiles wherever they fit.', accent=ACCENT, signature=SIGNATURE_FIB)
+    c.showPage()
+    return fb
+
+
+def build(path='wang-tiling.pdf', gaps=(0.0, 0.0)):
+    c = canvas.Canvas(path, pagesize=letter)
+    c.setTitle('Computing with Tiles')
+    c.setAuthor('C. Scott Ananian')
+    c.setSubject('Walls of Wang tiles that sieve for primes and add up Fibonacci numbers')
+    fbs = (page_one(c, gaps[0]), page_two(c, gaps[1]))
+    c.save()
+    return fbs
+
+
 if __name__ == '__main__':
-    # spread any space left under the footnote evenly above the four headings
+    # spread any space left under each page's footnote evenly above its
+    # headings (and, on page 2, above the big figure too)
     FOOTER_TOP, SLACK = 76, 8
-    spare = build() - FOOTER_TOP - SLACK
-    if spare > 0:
-        build(gap=spare / 4)
+    fbs = build()
+    gaps = tuple(max(0.0, (fb - FOOTER_TOP - SLACK) / n) for fb, n in zip(fbs, (4, 3)))
+    if any(gaps):
+        build(gaps=gaps)
