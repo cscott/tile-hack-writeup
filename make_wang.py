@@ -624,12 +624,11 @@ def page_one(c, gap=0.0):
     ts = 20.0
     tg = (CW - n * ts) / (n - 1)
     # the project's goal, in the space left beside the figure
-    tb = para(c, 'The goal of this project is to achieve an aperiodic tiling using tiles in '
-                 'easily obtainable practical shapes, and Wang tiles are attractive because the '
-                 'aperiodicity is achieved by edge matching, not shape. The Fibonacci sequence '
-                 'achieves this goal with a more pleasant appearance than the Jeandel &amp; Rao '
-                 'tile set. The prime sieve on page 2 is better still, though for aesthetic '
-                 'reasons more than technical ones.', tx, tb - 5, X1 - tx, small)
+    tb = para(c, 'Our goal was to achieve an aperiodic tiling for the home using tiles in '
+                 'easily obtainable practical shapes. Wang tiles are attractive because the '
+                 'aperiodicity is from edge matching rather than shape. This tiling '
+                 'achieves our goal with a more pleasant appearance than the Jeandel &amp; Rao '
+                 'tile set.', tx, tb - 5, X1 - tx, small)
     ty = min(rect[1] - 18, tb - 4)
     for k, t in enumerate(ft.TILES):
         cx = X0 + k * (ts + tg) + ts / 2
@@ -671,7 +670,7 @@ def page_two(c, gap=0.0, ws=None):
     # IV. The sieve -------------------------------------------------------
     y = 650 - gap
     heading(c, 'IV', 'A prime number sieve', X0, y, CW, accent=ACCENT)
-    yb = para(c, 'The wall in this room is a tiling with a set of 43 Wang tiles. '
+    yb = para(c, 'The wall in this room is an aperiodic tiling with a set of 43 Wang tiles. '
                  'Each edge type is shown by a tile color plus a pattern of etched lines, and '
                  'a run of matching edges is laid as a single subway tile set on the diagonal. '
                  'Column <i>n</i> stands for the number <i>n</i>. '
@@ -679,8 +678,8 @@ def page_two(c, gap=0.0, ws=None):
                  'boxes with odd sides, repeating across the wall and growing going down: 3, '
                  '5, 7, 9, …. The first box in each row, '
                  'drawn with thick double lines, sends a thick single ray up toward the top. '
-                 'If the ray reaches the top without hitting the edge of a box above it, it '
-                 'marks a prime; if it hits an edge, it turns into a thin line, marking a '
+                 'If the ray reaches the top without hitting the vertical edge of a box above it, it '
+                 'marks a prime; if it hits an edge, it turns into a thin line marking a '
                  'composite. (Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
                  'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19.',
               X0, y - 12, CW, small)
@@ -717,7 +716,7 @@ def page_two(c, gap=0.0, ws=None):
     yb = ty - 2 * (ts + 11) - 1
     fb = para(c, 'The 43 tiles have 15 edge types; edges must match, and top and left edges must be black. '
                  'Given these constraints, the tiles fill '
-                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic: its boxes '
+                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic since its boxes '
                  'keep growing and the primes never repeat.', X0, yb, CW, small)
     if fb < 80:
         print('warning: page 2 text runs into the footer by %.1f pt' % (80 - fb))
