@@ -424,17 +424,18 @@ def draw_jeandel_rao(c, x, y, size, gap):
         draw_colour_tile(c, t, view, 0, 0, JR_COLOR)
 
 
-SUM_COLOR = {0: GLAZE['basalt'], 1: GLAZE['silk'], 2: TILE_BLUE,
-             3: GLAZE['charcoal'], 4: GLAZE['charcoal'], 5: GLAZE['charcoal'],
-             6: GLAZE['charcoal'], 7: GLAZE['auburn'], 8: GLAZE['auburn']}
-
-
 def draw_sum(c, x, y, size, a1=4, a2=7):
     rows, s_cols = wt.sum_example(a1, a2)
     view = View(x + size / 2, y - size / 2, size)
+    regions, lines = {}, []
     for j, row in enumerate(rows):
         for i, t in enumerate(row):
-            draw_colour_tile(c, t[:4], view, i, j, SUM_COLOR, outline=None)
+            tile = wt.sum_tile(t)
+            for side in wt.SIDES:
+                regions.setdefault(tile_glaze(tile, side), []).append(side_triangle(side, i, j))
+            lines += tile_lines(tile, i, j)
+    fill_regions(c, {GLAZE[g]: polys for g, polys in regions.items()}, view)
+    draw_lines_by_glaze(c, regions, lines, view)
     draw_grid(c, view, len(rows[0]), len(rows))
     # labels
     for i, t in enumerate(rows[0]):
@@ -574,9 +575,10 @@ def page_one(c, gap=0.0):
     yb = para(c, 'Tiles can do arithmetic because a forced tiling carries information. '
                  'Both tilings on this page fill a quarter plane whose top and left edges '
                  'are black: only <b>★</b> fits in the corner, and the rest follows. In '
-                 'these 16 tiles (after Grünbaum &amp; Shephard) the edge types draw lines. A light grey line runs down from '
-                 'each <b>A</b>; a charcoal diagonal leaves <b>★</b> at 45°, turns along the '
-                 'bottom at the first line, and climbs back (red) from the second. Equal '
+                 'these 16 tiles (after Grünbaum &amp; Shephard) the edge types draw lines. A thick ray runs down from '
+                 'each <b>A</b>. A charcoal diagonal leaves <b>★</b> at 45°; where it meets the '
+                 'first ray, the ray turns and runs along the bottom to the second, and a red '
+                 'diagonal climbs back from there. Equal '
                  'diagonals carry the first distance across, so the climb reaches the top at '
                  'column A₁&nbsp;+&nbsp;A₂: put the <b>S</b> anywhere else and the tiling cannot be '
                  'completed.', tx, y - 12, X1 - tx, small)
@@ -586,7 +588,7 @@ def page_one(c, gap=0.0):
     sy = yb - 6
     for k, t in enumerate(wt.SUM_TILES):
         cx = tx + k * (st + st_gap) + st / 2
-        draw_colour_tile(c, t[:4], View(cx, sy - st / 2, st), 0, 0, SUM_COLOR, outline=SLATE)
+        draw_wang_tile(c, wt.sum_tile(t), View(cx, sy - st / 2, st), 0, 0)
         if t[4]:
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)

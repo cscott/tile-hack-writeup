@@ -269,6 +269,39 @@ SUM_TILES = [
 ]
 
 
+# How each edge type is drawn, in the same vocabulary as the prime and
+# Fibonacci tiles: (look on left/right edges, look on top/bottom edges), each
+# (base, [etched lines]).  The rays down from each A and the run along the
+# bottom are thick etched lines on silk, like the Fibonacci tiles' result ray
+# and distance-across line; the diagonals are charcoal and auburn tile.
+def _L(base, *lines):
+    return (base, list(lines))
+
+
+SUM_LOOKS = {
+    0: (_L('black'), _L('black')),
+    1: (_L('tan'), _L('tan')),
+    2: (None, _L('tan', 'thick')),       # ray down from each A
+    3: (None, _L('grey')),               # diagonal from the star
+    4: (_L('grey'), None),
+    5: (_L('tan', 'thick'), None),       # run along the bottom
+    6: (None, _L('grey')),               # under the star
+    7: (_L('brown'), None),              # diagonal back up to S
+    8: (None, _L('brown')),
+}
+
+
+class SumTile(Tile):
+    def look(self, side):
+        h, v = SUM_LOOKS[self.edge(side)]
+        return v if side in ('top', 'bottom') else h
+
+
+def sum_tile(t):
+    """A (top, right, bottom, left, label) tuple from SUM_TILES as a Tile."""
+    return SumTile(-1, t[4], *t[:4])
+
+
 def sum_example(a1, a2):
     """Tiling showing A at columns a1, a2 (1-based); returns (rows, s_column)."""
     star, A, blank_top = SUM_TILES[0], SUM_TILES[5], SUM_TILES[14]
