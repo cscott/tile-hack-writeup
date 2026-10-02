@@ -548,16 +548,16 @@ def page_one(c, gap=0.0):
                  'Tiles are laid edge to edge so that touching edges match, and may not be rotated or '
                  'reflected. Hao Wang (<font name="CJK">王浩</font>)<super>†</super> conjectured in 1961 that any set of such tiles that can '
                  'cover the plane can also cover it periodically. Robert Berger (1966) showed '
-                 'otherwise: tiles can mimic any computer program, one row per step, so '
+                 'otherwise: tiles can mimic any computer program (they are <i>Turing complete</i>), so '
                  'whether a set tiles the plane is undecidable. Along the way he found the '
                  'first <i>aperiodic</i> set, 20,426 tiles that tile the plane but never '
-                 'periodically. At right is the smallest aperiodic set possible: 11 tiles with 4 edge '
+                 'repeat. At right is the smallest aperiodic set possible: 11 tiles with 4 edge '
                  'types (Jeandel &amp; Rao, 2015).', X0, y - 12, tw, small)
     draw_jeandel_rao(c, X1 - jr_w, y - 16, jr_size, jr_gap)
     c.setFont('Serif-Italic', 7.4)
     c.setFillColor(GREY_T)
     c.drawCentredString(X1 - jr_w / 2, y - 16 - 2 * jr_size - jr_gap - 11,
-                        'an aperiodic set: these tile the plane, never periodically')
+                        'a minimal aperiodic set of tiles')
 
     # II. Computing a sum -------------------------------------------------
     y = min(yb, y - 80) - 15 - gap
@@ -572,16 +572,15 @@ def page_one(c, gap=0.0):
     c.drawCentredString(X0 + fig_w / 2, fy - len(rows) * sz - 10,
                         f'A at {a1} and {a2} force S to {a1 + a2}')
     tx = X0 + fig_w + 16
-    yb = para(c, 'Tiles can do arithmetic because a forced tiling carries information. '
-                 'Both tilings on this page fill a quarter plane whose top and left edges '
-                 'are black: only <b>★</b> fits in the corner, and the rest follows. In '
+    yb = para(c, 'Tiles can do arithmetic because the forced tiling carries information. '
+                 'This tiling fills a quarter plane whose top and left edges '
+                 'must be black. Only <b>★</b> fits in the corner, place the <b>A</b> tiles at your input values, and the rest follows. In '
                  'these 16 tiles (after Grünbaum &amp; Shephard) the edge types draw lines. A thick ray runs down from '
-                 'each <b>A</b>. A charcoal diagonal leaves <b>★</b> at 45°; where it meets the '
-                 'first ray, the ray turns and runs along the bottom to the second, and a red '
-                 'diagonal climbs back from there. Equal '
-                 'diagonals carry the first distance across, so the climb reaches the top at '
-                 'column A₁&nbsp;+&nbsp;A₂: put the <b>S</b> anywhere else and the tiling cannot be '
-                 'completed.', tx, y - 12, X1 - tx, small)
+                 'each <b>A</b>; a charcoal diagonal leaves <b>★</b> at 45°; where it meets the first ray it turns and runs horizontally until it meets the second ray, and '
+                 'a red diagonal climbs back from there. The diagonals must '
+                 'be equal, so the climb reaches the top at '
+                 'column A₁&nbsp;+&nbsp;A₂ where <b>S</b> must be placed.'
+                 , tx, y - 12, X1 - tx, small)
     n_sum = len(wt.SUM_TILES)
     st_gap = 3.0
     st = (X1 - tx - (n_sum - 1) * st_gap) / n_sum
@@ -597,7 +596,7 @@ def page_one(c, gap=0.0):
 
     # III. Fibonacci ------------------------------------------------------
     y = min(yb, fy - len(rows) * sz - 14) - 15 - gap
-    heading(c, 'III', 'Adding, again and again', X0, y, CW, accent=ACCENT)
+    heading(c, 'III', 'Fibonacci numbers', X0, y, CW, accent=ACCENT)
     cols, nrows = 22, 14
     fs = 11.2
     fy = y - 24
@@ -610,18 +609,16 @@ def page_one(c, gap=0.0):
     c.drawCentredString((rect[0] + rect[2]) / 2, rect[1] - 10,
                         'as it could be laid in 2″ × 8″ subway tile')
     tx = rect[2] + 14
-    tb = para(c, 'Run the adding machine over and over, and the tiles generate the Fibonacci '
-                 'numbers, each the sum of the two before.<super>‡</super> This wall is not yet '
-                 'built. <b>F′</b> and <b>F″</b> in the corner mark the first two numbers, 1 '
+    tb = para(c, 'Run the adding machine over and over and the tiles generate the Fibonacci '
+                 'numbers, each the sum of the two before.<super>‡</super> '
+                 'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
                  'and 2. Every <b>F</b> sends a thick ray straight down. A long charcoal '
                  'diagonal leaves the corner at 45°, and where it meets the ray of the '
                  '<b>F</b> at column <i>n</i>, at depth <i>n</i>, the ray turns and runs right '
                  'to the ray of the next <b>F</b>, at column <i>m</i>. There a charcoal '
-                 'staircase with a thin etched step climbs back at 45°, rising <i>n</i> rows '
+                 'staircase climbs back at 45°, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
-                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>. In tile, the long '
-                 'subway tiles run down-right on and below the long diagonal, and up-right '
-                 'above it.', tx, y - 12, X1 - tx, small)
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends it own ray down.', tx, y - 12, X1 - tx, small)
     # the 18 tiles, in a row under the figure
     n = len(ft.TILES)
     ts = 20.0
@@ -634,7 +631,7 @@ def page_one(c, gap=0.0):
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)
             c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
-    yb = para(c, 'These 18 tiles have thirteen edge types; edges must match. With the top and '
+    yb = para(c, 'These 18 tiles have thirteen edge types; as usual edges must match. With the top and '
                  'left edges black they fill the quarter plane in exactly one way, and since '
                  'the Fibonacci numbers spread ever further apart, that tiling is aperiodic. '
                  '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
@@ -643,9 +640,9 @@ def page_one(c, gap=0.0):
 
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
                  'is a homophone of <font name="CJK">黃</font>, Wong: a name held by several '
-                 'members of this house.', X0, yb - 6, CW, foot)
-    fb = para(c, '<super>‡</super> After Grünbaum &amp; Shephard, <i>Tilings and Patterns</i>, '
-                 'Fig. 11.4.2, which has three misprints: its list of tiles leaves out the one '
+                 'members of this home.', X0, yb - 6, CW, foot)
+    fb = para(c, '<super>‡</super> Grünbaum &amp; Shephard, '
+                 'Fig. 11.4.2 has three misprints: its list of tiles leaves out the one '
                  'that continues the diagonal, its example drops two of the “6” edge labels in '
                  'column 3, and its caption counts 11 among the Fibonacci numbers.',
               X0, fb - 2, CW, foot)
@@ -660,24 +657,24 @@ def page_one(c, gap=0.0):
 def page_two(c, gap=0.0, ws=None):
     """The prime wall and its 43 tiles."""
     framed_page(c)
-    title_block(c, 'PRIMES IN TILE',
-                'a wall of Wang tiles that sieves for primes, in ordinary 2″ × 8″ subway tile',
+    title_block(c, 'A WALL THAT FINDS PRIMES',
+                'Wang tiles that sieve for primes, in ordinary 2″ × 8″ subway tile',
                 accent=ACCENT, ornament=ornament)
 
     # IV. The sieve -------------------------------------------------------
     y = 650 - gap
-    heading(c, 'IV', 'A wall that finds primes', X0, y, CW, accent=ACCENT)
-    yb = para(c, 'The downstairs wall is a tiling with a set of 43 Wang tiles (section V). '
+    heading(c, 'IV', 'A prime number sieve', X0, y, CW, accent=ACCENT)
+    yb = para(c, 'The wall in this room is a tiling with a set of 43 Wang tiles. '
                  'Each edge type is shown by a tile color plus a pattern of etched lines, and '
                  'a run of matching edges is laid as a single subway tile set on the diagonal. '
-                 'Column <i>n</i> stands for the number <i>n</i>, and again the black top and '
-                 'left edges force everything else. The double lines force rows of square '
+                 'Column <i>n</i> stands for the number <i>n</i>. '
+                 'The double lines and charcoal diagonals create rows of square '
                  'boxes with odd sides, repeating across the wall and growing going down: 3, '
-                 '5, 7, 9, …, each crossed by a charcoal diagonal. The first box in each row, '
+                 '5, 7, 9, …. The first box in each row, '
                  'drawn with thick double lines, sends a thick single ray up toward the top. '
                  'If the ray reaches the top without hitting the edge of a box above it, it '
-                 'marks a prime; if it hits one, it turns into a thin line, marking a '
-                 'composite. (Even numbers get no ray; 2 has a tile of its own.) The thick '
+                 'marks a prime; if it hits an edge, it turns into a thin line, marking a '
+                 'composite. (Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
                  'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19.',
               X0, y - 12, CW, small)
     u0, v0, u1, v1 = WALL['wall_units']
@@ -693,7 +690,7 @@ def page_two(c, gap=0.0, ws=None):
     c.setFont('Serif-Italic', 7.4)
     c.setFillColor(GREY_T)
     c.drawCentredString(X0 + CW / 2, rect[1] - 10,
-                        'the Wang tiling of the wall, without grout: columns 1–20, top 15 rows')
+                        'the Wang tiling of the wall: columns 1–20, top 15 rows')
 
     # V. The tiles --------------------------------------------------------
     y = rect[1] - 18 - 15 - gap
@@ -711,9 +708,9 @@ def page_two(c, gap=0.0, ws=None):
         c.setFillColor(GREY_T)
         c.drawCentredString(cx, cy - ts / 2 - 6, t.name)
     yb = ty - 2 * (ts + 11) - 1
-    fb = para(c, 'Tile color plus etching gives the edge type, 15 in all; edges must match, and '
-                 'that is the only rule. With the top and left edges black, these tiles fill '
-                 'the quarter plane in exactly one way, and that tiling is aperiodic: its boxes '
+    fb = para(c, 'The 43 tiles have 15 edge types; edges must match, and top and left edges must be black. '
+                 'Given these constraints, the tiles fill '
+                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic: its boxes '
                  'keep growing and the primes never repeat.', X0, yb, CW, small)
     if fb < 80:
         print('warning: page 2 text runs into the footer by %.1f pt' % (80 - fb))
