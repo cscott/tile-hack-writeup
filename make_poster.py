@@ -313,10 +313,7 @@ def page_one(c):
             'golden-ratio proportions and 36° and 72° angles, so they must be custom-made. '
             'The pinwheel tiling needs only a standard 3″ × 6″ subway tile, cut once along '
             'a diagonal; the triangle’s smallest angle is <i>θ</i> = arctan ½ ≈ 26.565°. '
-            'Glazed tiles cannot be flipped, but they need not be: one diagonal gives two '
-            'right-handed triangles, the other two left-handed ones. Every triangle meets '
-            'another along its full hypotenuse, so on the wall they pair up into whole '
-            'tiles and kites (overleaf).<super>†</super>',
+            'There are two diagonals, and cutting along each yields different triangles: left-handed and right-handed. Two same-handed triangles meeting along their hypotenuse pair back up into full tiles; differently-handed triangles meeting along their hypotenuse become kites.<super>†</super>',
          X0 + 182, y - 12, CW - 182)
 
     # II. five from one
@@ -334,12 +331,12 @@ def page_one(c):
               'three: 125, shaded by direction']
     for i, s in enumerate(labels):
         c.drawCentredString(X0 + i * (dsz + gap) + dsz / 2, base - 12, s)
-    para(c, 'The triangle divides exactly into five copies of itself, each scaled by '
+    para(c, 'The 2:1 triangle divides exactly into five copies of itself, each scaled by '
             '1/√5: the altitude from the right angle splits off one, and the rest divides '
             'into four, two of which form an uncut subway tile. Enlarge by √5 and repeat: '
-            '1 tile becomes 5, then 25, then 125, covering ever larger regions of the plane. '
-            'John Conway found this substitution; Charles Radin (1994) showed that decorated '
-            'copies of the tile with local matching rules tile the plane <i>only</i> this way.',
+            '1 tile becomes 5, then 25, then 125, covering ever larger regions of the plane. This tiling was discovered by John Conway. '
+            'Charles Radin (1994) showed that this tiling can be enforced with decorated '
+            'copies of the tile and local matching rules.',
          X0, base - 22, CW)
 
     # III. irrational twist
