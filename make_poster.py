@@ -83,13 +83,13 @@ def para(c, text, x, ytop, w, style=body):
     return ytop - h
 
 
-def heading(c, num, text, x, y, w):
+def heading(c, num, text, x, y, w, accent=None):
     c.setFillColor(SLATE)
     c.setFont('Serif-Bold', 10.5)
     label = f'{num}.  ' + ' '.join(text.upper())
     c.drawString(x, y, label)
     tw = c.stringWidth(label, 'Serif-Bold', 10.5)
-    c.setStrokeColor(TILE_BLUE)
+    c.setStrokeColor(accent or TILE_BLUE)
     c.setLineWidth(0.6)
     c.line(x + tw + 8, y + 3.5, x + w, y + 3.5)
 
@@ -110,22 +110,28 @@ def place(x, y, size):
     return np.array([[s, 0], [0, s]]), np.array([x, y])
 
 
-def title_block(c, title, subtitle):
+def title_block(c, title, subtitle, accent=None, ornament=None):
+    """Title, subtitle and a rule with a small ornament in the middle.
+    `ornament(c, cx, cy)` draws the ornament; default is a pinwheel triangle."""
+    accent = accent or TILE_BLUE
     spaced(c, title, W / 2, 702, 'Serif', 25, 3.2, SLATE)
     c.setFont('Serif-Italic', 11.5)
     c.setFillColor(GREY_T)
     c.drawCentredString(W / 2, 683, subtitle)
-    c.setStrokeColor(TILE_BLUE)
+    c.setStrokeColor(accent)
     c.setLineWidth(0.6)
     c.line(W / 2 - 110, 671, W / 2 - 12, 671)
     c.line(W / 2 + 12, 671, W / 2 + 110, 671)
-    L, t = place(W / 2 - 8, 667.5, 16)
-    poly(c, verts(L, t), fill=TILE_BLUE, stroke=SLATE, lw=0.5)
+    if ornament:
+        ornament(c, W / 2, 671)
+    else:
+        L, t = place(W / 2 - 8, 667.5, 16)
+        poly(c, verts(L, t), fill=accent, stroke=SLATE, lw=0.5)
 
 
-def footer(c, left):
+def footer(c, left, accent=None, signature=None):
     fy = 64
-    c.setStrokeColor(TILE_BLUE)
+    c.setStrokeColor(accent or TILE_BLUE)
     c.setLineWidth(0.5)
     c.line(X0, fy + 12, X1, fy + 12)
     size = 7.6
@@ -136,7 +142,7 @@ def footer(c, left):
     c.drawString(X0, fy, left)
     c.setFont('Serif-Italic', 9.5)
     c.setFillColor(SLATE)
-    c.drawRightString(X1, fy - 1, SIGNATURE)
+    c.drawRightString(X1, fy - 1, signature or SIGNATURE)
 
 
 # ------------------------------------------------------------------ frame
