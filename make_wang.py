@@ -618,11 +618,18 @@ def page_one(c, gap=0.0):
                  'to the ray of the next <b>F</b>, at column <i>m</i>. There a charcoal '
                  'staircase climbs back at 45°, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
-                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends it own ray down.', tx, y - 12, X1 - tx, small)
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, y - 12, X1 - tx, small)
     # the 18 tiles, in a row under the figure
     n = len(ft.TILES)
     ts = 20.0
     tg = (CW - n * ts) / (n - 1)
+    # the project's goal, in the space left beside the figure
+    tb = para(c, 'The goal of this project is to achieve an aperiodic tiling using tiles in '
+                 'easily obtainable practical shapes, and Wang tiles are attractive because the '
+                 'aperiodicity is achieved by edge matching, not shape. The Fibonacci sequence '
+                 'achieves this goal with a more pleasant appearance than the Jeandel &amp; Rao '
+                 'tile set. The prime sieve on page 2 is better still, though for aesthetic '
+                 'reasons more than technical ones.', tx, tb - 5, X1 - tx, small)
     ty = min(rect[1] - 18, tb - 4)
     for k, t in enumerate(ft.TILES):
         cx = X0 + k * (ts + tg) + ts / 2
