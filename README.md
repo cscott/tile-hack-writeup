@@ -38,6 +38,9 @@ glyphs used here (θ π √ ℤ ½ ⅛ ¼) will do.
 | `fibtiles.py` | The Fibonacci tiles (Grünbaum & Shephard Fig. 11.4.2, corrected: 18 tiles), their edge-type looks, the forced tiling, and `lay_tiles()`, the greedy layout in 2″ × 8″ tile (down-right on and below the long diagonal, up-right above it; whole tiles from the upper end of each run, at most one cut per run). |
 | `tools/verify_fib.py` | Checks that the 18 tiles, and the tiles as drawn (look-alike edges merged), force 1, 2, 3, 5, 8, 13, 21, 34 in a 34 × 24 patch, and the Lucas-number variant mentioned on page 2. |
 | `tools/fib_preview.py` | The edge-type key, the 18 tiles and the laid tiling on one sheet (`fib_preview.pdf`). |
+| `hattiles.py` | The hat ("einstein") tiling by substitution, ported from Craig S. Kaplan's hatviz (BSD 3-Clause), plus the hat's 8 kites / 16 right triangles (legs 1 : √3). Label `H1` is the reflected hat. |
+| `tools/hat_preview.py` | Exploratory sketch of an unbuilt hat wall in the upstairs colors. |
+| `hat_preview.pdf`, `HAT_NOTES.md` | That sketch, and the findings: why 2 : 1 tiles can't make any hat-family tile, how to cut hats from 1 : √3 tiles, and why uniform grout works (with a tolerance table for near-√3 tiles); and the better design, laid in 60° rhombus tile with the fewest cuts (`hattiles.optimal_layout()`, page 2 of the sketch; needs `ortools`, result cached in `hat_layout.json`). |
 | `tools/verify_wang.py` | Checks that the Python solver reproduces `wang3.svg` and `wang3-grout.svg` tile for tile, and that the top row marks exactly the primes. |
 
 ## Common edits
