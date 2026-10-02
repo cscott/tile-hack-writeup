@@ -273,7 +273,11 @@ SUM_TILES = [
 # Fibonacci tiles: (look on left/right edges, look on top/bottom edges), each
 # (base, [etched lines]).  The rays down from each A and the run along the
 # bottom are thick etched lines on silk, like the Fibonacci tiles' result ray
-# and distance-across line; the diagonals are charcoal and auburn tile.
+# and distance-across line; the diagonals are charcoal and auburn tile.  Edge
+# 6 (under the star) gets a heavy double line, like the double line sent
+# down from the corner in the Fibonacci and prime walls, so that it differs from 3: if
+# they looked alike, the diagonal could start lower and S could stand at any
+# column from 10 to 17 (tools/verify_sum.py).
 def _L(base, *lines):
     return (base, list(lines))
 
@@ -285,7 +289,8 @@ SUM_LOOKS = {
     3: (None, _L('grey')),               # diagonal from the star
     4: (_L('grey'), None),
     5: (_L('tan', 'thick'), None),       # run along the bottom
-    6: (None, _L('grey')),               # under the star
+    6: (None, _L('grey', 'thick', 'thick')),  # under the star: a heavy double line, as
+                                              # under F' and * in the other sets
     7: (_L('brown'), None),              # diagonal back up to S
     8: (None, _L('brown')),
 }
