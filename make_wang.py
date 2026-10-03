@@ -566,15 +566,22 @@ def page_one(c, gap=0.0):
     jr_size, jr_gap = 14, 3
     jr_w = 6 * jr_size + 5 * jr_gap
     tw = CW - jr_col - 16
-    yb = para(c, 'A <i>Wang tile</i> is a square with a type on each edge, shown here by color. '
-                 'Tiles are laid edge to edge so that touching edges match, and may not be rotated or '
-                 'reflected. Hao Wang (<font name="CJK">王浩</font>)<super>†</super> conjectured in 1961 that any set of such tiles that can '
+    yb = para(c, 'A <i>Wang tiling</i> is a tiling of square tiles with labels on each edge, such that the labels on touching edges match. '
+                 'Tiles may not be rotated or '
+                 'reflected. '
+                 'We represent labels as a combination of color and etched lines, which must form a continuous line on a uniform background where edges meet. '
+                 'Hao Wang (<font name="CJK">王浩</font>)<super>†</super> conjectured in 1961 that any set of such tiles that can '
                  'cover the plane can also cover it periodically. Robert Berger (1966) showed '
                  'otherwise: tiles can mimic any computer program (they are <i>Turing complete</i>), so '
                  'whether a set tiles the plane is undecidable. Along the way he found the '
                  'first <i>aperiodic</i> set, 20,426 tiles that tile the plane but never '
-                 'repeat. At right is the smallest aperiodic set possible: 11 tiles with 4 edge '
-                 'types (Jeandel &amp; Rao, 2015).', X0, y - 12, tw, small)
+                 'repeat. At right is the smallest aperiodic set possible: 11 tiles with 4 unique edge '
+                 'labels (Jeandel &amp; Rao, 2015). '
+'Our goal is to achieve an aperiodic tiling for the home using tiles in '
+                 'easily obtainable practical shapes. Wang tiles are attractive because the '
+                 'aperiodicity is from edge matching rather than shape. The Jeandel &amp; Rao '
+                 'tile set thus achieves our goal.'
+              '', X0, y - 12, tw, small)
     draw_jeandel_rao(c, X1 - jr_col + (jr_col - jr_w) / 2, y - 14, jr_size, jr_gap)
     py = y - 14 - 2 * jr_size - jr_gap - 6
     pb = draw_jr_patch(c, X1 - jr_col, py, jr_col)
@@ -607,14 +614,13 @@ def page_one(c, gap=0.0):
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)
             c.drawCentredString(cx, sy - st - 8, '★' if t[4] == '*' else t[4])
-    yb = para(c, 'Tiles can do arithmetic because the forced tiling carries information. '
-                 'This tiling fills a quarter plane whose top and left edges '
-                 'must be black. Only <b>★</b> fits in the corner, place the <b>A</b> tiles at your input values, and the rest follows. In '
-                 'these 16 tiles (after Grünbaum &amp; Shephard) the edge types draw lines. A thick ray runs down from '
-                 'each <b>A</b>; a charcoal diagonal leaves <b>★</b> at 45°; where it meets the first ray it turns and runs horizontally until it meets the second ray, and '
-                 'a red diagonal climbs back from there. The diagonals must '
-                 'be equal, so the climb reaches the top at '
-                 'column A₁&nbsp;+&nbsp;A₂ where <b>S</b> must be placed.'
+    yb = para(c, 'This set of 16 tiles with 6  labels demonstrates one way in which Wang tiles can do arithmetic. '
+                 'We will work on a quarter plane whose top and left edges '
+                 'are constrained to be black. Place the <b>A</b> tiles on the top row at your input values, A₁ and A₂. The <b>★</b> tile can only be placed in the corner. '
+                 'The constraints cause an etched line to descend from '
+                 'each <b>A</b>. A charcoal diagonal leaves <b>★</b> at 45°; where it meets the first line it turns and starts a horizontal line at a depth corresponding to A₁. When it meets the second line '
+                 'a red diagonal climbs back from there. The climb reaches the top and forces the <b>S</b> tile, representing the sum, to be placed at '
+                 'column A₁&nbsp;+&nbsp;A₂.'
                  , tx, sy - st - 14, X1 - tx, small)
 
     # III. Fibonacci ------------------------------------------------------
@@ -632,12 +638,8 @@ def page_one(c, gap=0.0):
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)
             c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
-    yb = para(c, 'These 18 tiles have thirteen edge types; as usual edges must match. With the top and '
-                 'left edges black they fill the quarter plane in exactly one way, and since '
-                 'the Fibonacci numbers spread ever further apart, that tiling is aperiodic. '
-                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
-                 'at column 3 instead, and the same machinery produces the Lucas numbers '
-                 '1, 3, 4, 7, 11, 18, 29.', X0, ty - ts - 14, CW, small)
+    yb = para(c, ''
+                 '', X0, ty - ts - 14, CW, small)
     # the tiling, with two paragraphs beside it
     cols, nrows = 22, 14
     fs = 11.2
@@ -651,22 +653,25 @@ def page_one(c, gap=0.0):
     c.drawCentredString((rect[0] + rect[2]) / 2, rect[1] - 10,
                         'as it could be laid in 2″ × 8″ subway tile')
     tx = rect[2] + 14
-    tb = para(c, 'Run the adding machine over and over and the tiles generate the Fibonacci '
-                 'numbers, each the sum of the two before. '
-                 'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
-                 'and 2. Every <b>F</b> sends a thick ray straight down. A long charcoal '
-                 'diagonal leaves the corner at 45°, and where it meets the ray of the '
-                 '<b>F</b> at column <i>n</i>, at depth <i>n</i>, the ray turns and runs right '
-                 'to the ray of the next <b>F</b>, at column <i>m</i>. There a charcoal '
+    tb = para(c, ''
+              'By extending the adding tiles we can generate the Fibonacci numbers, since each is the sum of the two before. '
+              'The tiling is aperiodic because the Fibonacci numbers spread ever further apart, so this is another way of achieving our goal. '
+              'This set of 18 tiles have 9 distinct edge labels. With the top and '
+                 'left edges constrained to be black they fill the quarter plane in exactly one way. '
+              'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
+                 'and 2. Every <b>F</b> sends an etched line down. A long charcoal '
+                 'diagonal leaves the corner at 45°, and where it meets the line of the '
+                 '<b>F</b> at column <i>n</i>, at depth <i>n</i>, the line turns and runs right '
+                 'to the descending line of the next <b>F</b>, at column <i>m</i>. There a charcoal '
                  'staircase climbs back at 45°, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
                  '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, fy + 10, X1 - tx, small)
     # the project's goal, in the space left beside the figure
-    tb = para(c, 'Our goal was to achieve an aperiodic tiling for the home using tiles in '
-                 'easily obtainable practical shapes. Wang tiles are attractive because the '
-                 'aperiodicity is from edge matching rather than shape. This tiling '
-                 'achieves our goal with a more pleasant appearance than the Jeandel &amp; Rao '
-                 'tile set.', tx, tb - 5, X1 - tx, small)
+    tb = para(c, ''
+                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
+                 'at column 3 instead, and the same machinery produces the Lucas numbers '
+                 '1, 3, 4, 7, 11, 18, 29.'
+              '', tx, tb - 5, X1 - tx, small)
     yb = min(rect[1] - 14, tb)
 
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
@@ -713,22 +718,22 @@ def page_two(c, gap=0.0, ws=None):
             c.setFillColor(GREY_T)
         c.drawCentredString(cx, cy - ts / 2 - 6, '★' if t.name == '*' else t.name)
     yb = ty - 2 * (ts + 11) - 1
-    yb = para(c, 'The 43 tiles have 15 edge types; edges must match, and top and left edges must be black. '
+    yb = para(c, 'The wall in this room is an aperiodic tiling with a set of 43 Wang tiles with 15 distinct edge labels. '
+                 'Each edge label is shown by a tile color plus a pattern of etched lines, and '
+                 'a run of matching colors is laid as a single subway tile set on the diagonal. '
+                 'Tiles can not be rotated or reflected, edges must match, and the top and left borders must be black. '
                  'Given these constraints, the tiles fill '
-                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic since its boxes '
-                 'keep growing and the primes never repeat.', X0, yb, CW, small)
-    yb = para(c, 'The wall in this room is an aperiodic tiling with a set of 43 Wang tiles. '
-                 'Each edge type is shown by a tile color plus a pattern of etched lines, and '
-                 'a run of matching edges is laid as a single subway tile set on the diagonal. '
+                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic due to the nature of primes.', X0, yb, CW, small)
+    yb = para(c, ''
                  'Column <i>n</i> stands for the number <i>n</i>. '
-                 'The double lines and charcoal diagonals create rows of square '
+                 'The double etched lines and charcoal diagonals create rows of square '
                  'boxes with odd sides, repeating across the wall and growing going down: 3, '
                  '5, 7, 9, …. The first box in each row, '
-                 'drawn with thick double lines, sends a thick single ray up toward the top. '
-                 'If the ray reaches the top without hitting the vertical edge of a box above it, it '
+                 'drawn with thick double lines, sends a thick single line up toward the top. '
+                 'If the line reaches the top without hitting the vertical edge of a box above it, it '
                  'marks a prime; if it hits an edge, it turns into a thin line marking a '
                  'composite. (Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
-                 'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19.',
+                 'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19, marked by tile <b>p</b>. Composite numbers use tile <b>c</b>.',
               X0, yb - 6, CW, small)
     u0, v0, u1, v1 = WALL['wall_units']
     ws = ws or WALL_SCALE
