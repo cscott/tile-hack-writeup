@@ -424,6 +424,27 @@ def draw_jeandel_rao(c, x, y, size, gap):
         draw_colour_tile(c, t, view, 0, 0, JR_COLOR)
 
 
+JR_PATCH = json.load(open(os.path.join(HERE, 'jr_patch.json')))   # from tools/jr_patch.py
+
+
+def draw_jr_patch(c, x, y, w, r0=7, rows=11):
+    """Rows r0 .. r0+rows-1 of the solved Jeandel-Rao patch, scaled to width
+    w, top-left at (x, y).  Returns the y of its bottom edge."""
+    patch = JR_PATCH[r0:r0 + rows]
+    s = w / len(patch[0])
+    view = View(x + s / 2, y - s / 2, s)
+    regions = {}
+    for j, row in enumerate(patch):
+        for i, k in enumerate(row):
+            for side, e in zip(wt.SIDES, wt.JEANDEL_RAO[k]):
+                regions.setdefault(JR_COLOR[e], []).append(side_triangle(side, i, j))
+    fill_regions(c, regions, view)
+    c.setStrokeColor(SLATE)
+    c.setLineWidth(0.5)
+    c.rect(x, y - rows * s, w, rows * s, stroke=1, fill=0)
+    return y - rows * s
+
+
 def draw_sum(c, x, y, size, a1=4, a2=7):
     rows, s_cols = wt.sum_example(a1, a2)
     view = View(x + size / 2, y - size / 2, size)
@@ -541,9 +562,10 @@ def page_one(c, gap=0.0):
     # I. Wang tiles -------------------------------------------------------
     y = 650 - gap
     heading(c, 'I', 'Wang tiles', X0, y, CW, accent=ACCENT)
-    jr_size, jr_gap = 20, 4
+    jr_col = 140                          # right-hand column: the tiles, then a patch
+    jr_size, jr_gap = 14, 3
     jr_w = 6 * jr_size + 5 * jr_gap
-    tw = CW - jr_w - 16
+    tw = CW - jr_col - 16
     yb = para(c, 'A <i>Wang tile</i> is a square with a type on each edge, shown here by color. '
                  'Tiles are laid edge to edge so that touching edges match, and may not be rotated or '
                  'reflected. Hao Wang (<font name="CJK">王浩</font>)<super>†</super> conjectured in 1961 that any set of such tiles that can '
@@ -553,14 +575,16 @@ def page_one(c, gap=0.0):
                  'first <i>aperiodic</i> set, 20,426 tiles that tile the plane but never '
                  'repeat. At right is the smallest aperiodic set possible: 11 tiles with 4 edge '
                  'types (Jeandel &amp; Rao, 2015).', X0, y - 12, tw, small)
-    draw_jeandel_rao(c, X1 - jr_w, y - 16, jr_size, jr_gap)
+    draw_jeandel_rao(c, X1 - jr_col + (jr_col - jr_w) / 2, y - 14, jr_size, jr_gap)
+    py = y - 14 - 2 * jr_size - jr_gap - 6
+    pb = draw_jr_patch(c, X1 - jr_col, py, jr_col)
     c.setFont('Serif-Italic', 7.4)
     c.setFillColor(GREY_T)
-    c.drawCentredString(X1 - jr_w / 2, y - 16 - 2 * jr_size - jr_gap - 11,
-                        'a minimal aperiodic set of tiles')
+    c.drawCentredString(X1 - jr_col / 2, pb - 10, 'a minimal aperiodic set, and a patch of its tiling')
+    jr_bottom = pb - 14
 
     # II. Computing a sum -------------------------------------------------
-    y = min(yb, y - 80) - 15 - gap
+    y = min(yb, jr_bottom) - 15 - gap
     heading(c, 'II', 'Tiles that add', X0, y, CW, accent=ACCENT)
     sz = 13.0
     a1, a2 = 4, 7
@@ -628,7 +652,7 @@ def page_one(c, gap=0.0):
                         'as it could be laid in 2″ × 8″ subway tile')
     tx = rect[2] + 14
     tb = para(c, 'Run the adding machine over and over and the tiles generate the Fibonacci '
-                 'numbers, each the sum of the two before.<super>‡</super> '
+                 'numbers, each the sum of the two before. '
                  'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
                  'and 2. Every <b>F</b> sends a thick ray straight down. A long charcoal '
                  'diagonal leaves the corner at 45°, and where it meets the ray of the '
@@ -648,11 +672,10 @@ def page_one(c, gap=0.0):
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
                  'is a homophone of <font name="CJK">黃</font>, Wong: a name held by several '
                  'members of this home.', X0, yb - 6, CW, foot)
-    fb = para(c, '<super>‡</super> Grünbaum &amp; Shephard, '
-                 'Fig. 11.4.2 has three misprints: its list of tiles leaves out the one '
-                 'that continues the diagonal, its example drops two of the “6” edge labels in '
-                 'column 3, and its caption counts 11 among the Fibonacci numbers.',
-              X0, fb - 2, CW, foot)
+    # (Dropped from the poster: Grünbaum & Shephard's Fig. 11.4.2 has three
+    # misprints.  Its list of tiles leaves out the one that continues the
+    # diagonal, its example drops two of the "6" edge labels in column 3, and
+    # its caption counts 11 among the Fibonacci numbers.  See fibtiles.py.)
     if fb < 80:
         print('warning: page 1 footnotes run into the footer by %.1f pt' % (80 - fb))
     footer(c, 'Addition and Fibonacci tiles after Grünbaum & Shephard, Tilings and Patterns, §11.4.',

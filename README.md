@@ -42,7 +42,7 @@ glyphs used here (θ π √ ℤ ½ ⅛ ¼) will do.
 | `hattiles.py` | The hat ("einstein") tiling by substitution, ported from Craig S. Kaplan's hatviz (BSD 3-Clause), plus the hat's 8 kites / 16 right triangles (legs 1 : √3). Label `H1` is the reflected hat. |
 | `tools/hat_preview.py` | Exploratory sketch of an unbuilt hat wall in the upstairs colors. |
 | `hat_preview.pdf`, `HAT_NOTES.md` | That sketch, and the findings: why 2 : 1 tiles can't make any hat-family tile, how to cut hats from 1 : √3 tiles, and why uniform grout works (with a tolerance table for near-√3 tiles); and the better design, laid in 60° rhombus tile with the fewest cuts (`hattiles.optimal_layout()`, page 2 of the sketch; needs `ortools`, result cached in `hat_layout.json`). |
-| `tools/jr_patch.py` | A patch of the Jeandel–Rao tiling in the poster's colors (`jr_patch.pdf`; needs `ortools`). It solves a 44 × 34 patch and shows the middle 34 × 24. |
+| `tools/jr_patch.py`, `jr_patch.json` | A patch of the Jeandel–Rao tiling in the poster's colors (`jr_patch.pdf`; needs `ortools`). It solves a 44 × 34 patch and keeps the middle 34 × 24 in `jr_patch.json`, from which `make_wang.py` draws rows 7–17 under the tile set in section I (so building the poster doesn't need `ortools`). |
 | `tools/verify_sum.py` | Checks that the addition tiles force S to column A₁ + A₂, both with the book's edge types and with edges merged wherever they look alike as drawn (`wangtiles.SUM_LOOKS`). Edge 6, under ★, carries a heavy double line (as under F′ and ★ in the other two sets) partly for this reason: drawn like edge 3, it would let S stand anywhere from column 10 to 17. |
 | `tools/verify_wang.py` | Checks that the Python solver reproduces `wang3.svg` and `wang3-grout.svg` tile for tile, and that the top row marks exactly the primes. |
 
@@ -65,7 +65,7 @@ glyphs used here (θ π √ ℤ ½ ⅛ ¼) will do.
 
 ## Notes on the Fibonacci section
 
-- The book's figure has three misprints: panel (b) omits the tile (7, 8, 1, 1) that continues the diagonal, the example grid (a) lacks two "6" labels at cells (2,2) and (2,3), and the caption lists 11. With the 18 tiles the quarter-plane tiling is forced.
+- The book's figure has three misprints (no longer footnoted on the poster; the note is a comment in `make_wang.py`): panel (b) omits the tile (7, 8, 1, 1) that continues the diagonal, the example grid (a) lacks two "6" labels at cells (2,2) and (2,3), and the caption lists 11. With the 18 tiles the quarter-plane tiling is forced.
 - Look-alike edges: 2 and 3 may share a look (plain red), but 7 vs 10, 8 vs 9 and 6 vs 11 must differ, or the tiling stops being forced; that is why the climbing staircase (9/10) has a thin etched line. If F′ were also made to look like an ordinary F, the tiles would admit other starting pairs, such as the Lucas numbers.
 - The tiling is solved 32 columns wide and cropped, so the up-right runs at the right edge of the section III figure and the page-1 border keep their upper ends and the stagger stays regular.
 

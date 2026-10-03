@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """A patch of the Jeandel-Rao tiling in the poster's colors.
 
-    PYTHONPATH=. python3 tools/jr_patch.py   -> jr_patch.pdf  (needs ortools)
+    PYTHONPATH=. python3 tools/jr_patch.py   -> jr_patch.pdf, jr_patch.json  (needs ortools)
+
+jr_patch.json holds the middle of the solved patch as rows of indices into
+wangtiles.JEANDEL_RAO; make_wang.py draws a piece of it in section I.
 
 Solves a larger patch with CP-SAT and shows its middle, which is more likely
 to be part of a tiling of the whole plane than the edges of a finite patch.
 """
+import json
 import sys
 from ortools.sat.python import cp_model
 from reportlab.pdfgen import canvas
@@ -34,6 +38,7 @@ grid = [[next(T[k] for k in range(len(T)) if s.Value(x[i, j, k])) for i in range
         for j in range(H_SOLVE)]
 patch = [row[MARGIN:W_SOLVE - MARGIN] for row in grid[MARGIN:H_SOLVE - MARGIN]]
 cols, rows = len(patch[0]), len(patch)
+json.dump([[T.index(t) for t in row] for row in patch], open('jr_patch.json', 'w'))
 
 size = 15.0
 pw, ph = cols * size + 60, rows * size + 80
