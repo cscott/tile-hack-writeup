@@ -733,14 +733,13 @@ def page_two(c, gap=0.0, ws=None):
                  'the infinite quarter plane in exactly one way, and that tiling is aperiodic due to the nature of primes.', X0, yb, CW, small)
     yb = para(c, ''
                  'Column <i>n</i> stands for the number <i>n</i>. '
-                 'Each odd column sends down a thin or thick etched line. '
+                 'Each odd column sends down an etched line which could be thin or thick. '
                  'These interact with the thick double etched lines to start '
                  'an vertical sequence of boxes of increasing odd sizes (3, 5, 7, 9, …) '
                  'which then interact with the charcoal diagonals to repeat '
-                 'in rows. The line from the odd column is constrained to '
-                 'be thick only if it never crosses the vertical edge of '
-                 'another box, marking a prime (tile <b>Ap</b>); otherwise the line becomes '
-                 'thin marking an odd composite (tile <b>Ac</b>). '
+                 'in rows. The line from the odd column is thick when it emerges from the first box in its row, '
+                 'but can remain thick only if it never crosses the vertical '
+                 'edge of another box; otherwise it becomes thin. '
                  '(Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
                  'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19, marked by tile <b>p</b>. Composite numbers use tile <b>c</b>.',
               X0, yb - 6, CW, small)
