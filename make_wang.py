@@ -588,7 +588,8 @@ def page_one(c, gap=0.0):
     yb = para(c, 'Our goal is to achieve an aperiodic tiling for the home using tiles in '
                  'easily obtainable practical shapes. Wang tiles are attractive because the '
                  'aperiodicity is from edge matching rather than shape. The Jeandel &amp; Rao '
-                 'tile set thus achieves our goal.', X0, min(yb, jr_bottom) - 6, CW, small)
+                 'tile set thus achieves our goal, but let\'s go further.'
+                 '', X0, min(yb, jr_bottom) - 6, CW, small)
 
     # II. Computing a sum -------------------------------------------------
     y = yb - 15 - gap
@@ -614,12 +615,12 @@ def page_one(c, gap=0.0):
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)
             c.drawCentredString(cx, sy - st - 8, '★' if t[4] == '*' else t[4])
-    yb = para(c, 'This set of 16 tiles with 6  labels demonstrates one way in which Wang tiles can do arithmetic. '
+    yb = para(c, 'This set of 16 tiles with 6 labels demonstrates arithmetic with Wang tiles. '
                  'We will work on a quarter plane whose top and left edges '
                  'are constrained to be black. Place the <b>A</b> tiles on the top row at your input values, A₁ and A₂. The <b>★</b> tile can only be placed in the corner. '
-                 'The constraints cause an etched line to descend from '
-                 'each <b>A</b>. A charcoal diagonal leaves <b>★</b> at 45°; where it meets the first line it turns and starts a horizontal line at a depth corresponding to A₁. When it meets the second line '
-                 'a red diagonal climbs back from there. The climb reaches the top and forces the <b>S</b> tile, representing the sum, to be placed at '
+                 'The tile edge constraints cause an etched line to descend from '
+                 'each <b>A</b>. A charcoal diagonal leaves <b>★</b>; where it meets the first line it turns and starts a horizontal line at a depth corresponding to A₁. When that meets the second line '
+                 'a red diagonal climbs up. This forces the <b>S</b> tile, representing the sum, to be placed at '
                  'column A₁&nbsp;+&nbsp;A₂.'
                  , tx, sy - st - 14, X1 - tx, small)
 
@@ -653,10 +654,9 @@ def page_one(c, gap=0.0):
                         'as it could be laid in 2″ × 8″ subway tile')
     tx = rect[2] + 14
     tb = para(c, ''
-              'By extending the adding tiles we can generate the Fibonacci numbers, since each is the sum of the two before. '
-              'The tiling is aperiodic because the Fibonacci numbers spread ever further apart, so this is another way of achieving our goal. '
-              'This set of 18 tiles have 9 distinct edge labels. With the top and '
-                 'left edges constrained to be black they fill the quarter plane in exactly one way. '
+              'By extending the previous tiles we can generate the Fibonacci numbers, each the sum of the two before. '
+              'The tiling is aperiodic because the Fibonacci numbers spread out, so this is another tiling which achieves our goal. '
+              'This set of 18 tiles have 9 distinct edge labels; top and left borders are constrained to be black as before. '
               'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
                  'and 2. Every <b>F</b> sends an etched line down. A long charcoal '
                  'diagonal leaves the corner at 45°, and where it meets the line of the '
