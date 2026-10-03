@@ -11,6 +11,7 @@ FLIPS = {
     'identity': kd.I3,                                        # as built (typo discarded)
     'literal': kd.R(A) @ kd.S(-1, 1) @ kd.R(-A),              # what the template meant
     'axis': kd.R(A) @ kd.S(1, -1) @ kd.R(-A),                 # mirror across the kite's axis
+                                                              # (kitedomino with FLIPDART_IS_IDENTITY = False)
 }
 COL = ['#cfcecc', '#9eaebe']
 
@@ -58,7 +59,7 @@ w_ax = pieces('axis', kd.on(0, 6, 12, 34, 35, 17, 4, 5))
 k_id = {key(*x): x[1] for x in w_id}
 changed = {key(*x) for x in w_ax if k_id.get(key(*x)) != x[1]}
 draw(axs[1, 0], w_id, '(c) worms 3, as built')
-draw(axs[1, 1], w_ax, f'(d) worms 3 with the axis-mirror flip rotate(α) scale(1,−1) rotate(−α)\n'
+draw(axs[1, 1], w_ax, f'(d) worms 3 with the intended flip, rotate(α) scale(1,−1) rotate(−α)\n'
      f'same shapes; {len(changed)} pieces change colour (red)', highlight=changed)
 fig.tight_layout()
 fig.savefig('flipdart.png', dpi=140)

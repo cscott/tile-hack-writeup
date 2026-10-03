@@ -17,7 +17,9 @@ bit `num` of N (mod the number of colours), where num is the child's index:
 Fidelity note: mksvg.js's flipDart() writes the malformed transform
 "rotate({$ALPHA_DEG}) ...", which renderers (Inkscape included) discard,
 so a "flipped" dart is drawn unflipped.  The bathroom was laid from that
-output, so this port reproduces it (FLIPDART_IS_IDENTITY = True).
+output, so this port reproduces it (FLIPDART_IS_IDENTITY = True).  Set it to
+False for the intended flip, a mirror across the kite's axis (see FLIP_DART):
+the shapes are the same either way, only some colourings change.
 """
 import math
 from functools import lru_cache
@@ -29,7 +31,7 @@ TILE_KERF = 1 / 8    # saw kerf between the two halves of a kite
 
 ALPHA = math.atan(0.5)
 ALPHA_DEG = math.degrees(ALPHA)
-FLIPDART_IS_IDENTITY = True
+FLIPDART_IS_IDENTITY = False
 
 # The tiles actually used (names from mksvg.js)
 BATH_COLORS = ['#cfcecc',   # weather gray
@@ -60,7 +62,13 @@ def S(sx, sy=None):
 
 I3 = np.eye(3)
 FLIP_RECT = T(2, 0) @ S(-1, 1)
-FLIP_DART = I3 if FLIPDART_IS_IDENTITY else R(ALPHA_DEG) @ S(-1, 1) @ R(-ALPHA_DEG)
+# A flipped dart is its mirror image across the kite's axis, the line from
+# its origin vertex through (2, 1) at angle ALPHA.  mksvg.js wrote
+# rotate(ALPHA) scale(-1,1) rotate(-ALPHA), which mirrors across the line
+# *perpendicular* to the axis and moves the dart out of its slot; plain
+# scale(-1,1) mirrors across the y axis, with the same problem.  The axis
+# mirror needs scale(1,-1) between the rotations.
+FLIP_DART = I3 if FLIPDART_IS_IDENTITY else R(ALPHA_DEG) @ S(1, -1) @ R(-ALPHA_DEG)
 
 # children of a domino: (num, transform, flip-flag); 0-7 dominoes, 8-12 darts
 RECT_CENTER = (0, T(4, 3) @ R(-2 * ALPHA_DEG), True)
