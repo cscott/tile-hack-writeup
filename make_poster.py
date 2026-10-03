@@ -278,7 +278,7 @@ def draw_level1(c, x, y, size):
         poly(c, pg, fill=TILT_SHADE[1])
     for pg in kids:
         poly(c, pg, stroke=SLATE, lw=0.7)
-    long_legs(c, kids + [verts(L, t)], 2.2)
+    long_legs(c, kids, 2.2)
     a, b = L @ np.array([1.0, 0.0]) + t, L @ np.array([1.6, 0.8]) + t   # children 3 | 4
     c.setStrokeColor(TILT_SHADE[1])
     c.setLineWidth(1.2)
@@ -288,7 +288,7 @@ def draw_level1(c, x, y, size):
     c.setDash(2, 2)
     c.line(*a, *b)
     c.setDash()
-    poly(c, verts(L, t), stroke=SLATE, lw=1.2)
+    poly(c, verts(L, t), stroke=SLATE, lw=0.8)
 
 
 def draw_level(c, x, y, size, n):
@@ -300,8 +300,8 @@ def draw_level(c, x, y, size, n):
         poly(c, verts(Lk, tk), fill=TILT_SHADE[orient_k(Lk)])
     for Lk, tk, p in tiles:
         poly(c, verts(Lk, tk), stroke=SLATE, lw=0.35 if n > 2 else 0.5)
-    poly(c, verts(L, t), stroke=SLATE, lw=1.1)
-    long_legs(c, [verts(Lk, tk) for Lk, tk, p in tiles] + [verts(L, t)], 1.5 if n == 2 else 1.0)
+    poly(c, verts(L, t), stroke=SLATE, lw=0.8)
+    long_legs(c, [verts(Lk, tk) for Lk, tk, p in tiles], 1.6 if n == 2 else 1.25)
     return sorted({orient_k(Lk) for Lk, tk, p in tiles})
 
 
@@ -419,9 +419,9 @@ def page_one(c):
         'distinct, the tiling must be aperiodic. (If no child were mirrored, every tile '
         'would point in direction <i>nθ</i>, and the directions would be finite!)',
         '<b>4.</b> arctan ½ is not a rational multiple of π,<super>§</super> so no two '
-        'directions <i>kθ</i> coincide, even up to a multiple of 90°. A pinwheel tiling '
+        'directions <i>kθ</i> coincide. A pinwheel tiling '
         'contains supertiles of every generation, so it has infinitely many directions '
-        '(uniformly distributed, as Radin showed). '
+        '(Radin showed they are uniformly distributed around the circle). '
         '<b>Therefore no pinwheel tiling is periodic.</b>',
     ]
     yy = y - 12
@@ -445,18 +445,17 @@ def page_one(c):
 
     # footnotes
     fy = my - 17
-    fy = para(c, '<super>†</super> <i>For the attentive viewer:</i> the tiles are exactly '
-                 '2 : 1, but the grout joints are not uniform. For tile plus grout to stay '
-                 'on a 2 : 1 grid, 6″ + <i>g</i><sub>end</sub> = 2(3″ + '
-                 '<i>g</i><sub>side</sub>), so <i>g</i><sub>end</sub> = '
-                 '2<i>g</i><sub>side</sub>: ⅛″ joints along the long sides, but ¼″ at the '
-                 'short ends. Can you see the difference?', X0, fy, CW, foot) - 3
-    fy = para(c, '<super>‡</super> The same works for any <i>N</i> : 1 tile. The altitude cuts off one '
+    fy = para(c, '<super>†</super> <i>For the attentive:</i> the tiles are exactly '
+                 '2:1, but the grout joints are not uniform. For tile plus grout to stay '
+                 'on a 2:1 grid, the ¼″ grout on the short sides must be twice as wide as the ⅛″ grout on the long sides. '
+                 'Can you see the difference?', X0, fy, CW, foot) - 3
+    fy = para(c, '<super>‡</super> The same works for any <i>N</i>:1 tile. The altitude cuts off one '
                  'copy; the rest is the triangle enlarged <i>N</i> times, which divides into '
                  '<i>N</i>² copies (<i>N</i> along the hypotenuse and <i>N</i>(<i>N</i>−1)/2 whole '
                  'tiles), so the triangle divides into <i>N</i>² + 1 copies scaled by '
-                 '1/√(<i>N</i>² + 1). For each, <i>θ</i> = arctan(1/<i>N</i>): a 4″ × 12″ tile '
-                 'gives a 10-piece pinwheel, a 2″ × 8″ tile a 17-piece one. <i>N</i> = 1 is '
+                 '1/√(<i>N</i>² + 1). A 4″ × 12″ tile '
+                 'gives a 10-piece pinwheel, a 2″ × 8″ tile a 17-piece one. '
+                 'In general <i>θ</i> = arctan(1/<i>N</i>). <i>N</i> = 1 is '
                  'degenerate and periodic, since arctan 1 = π/4 <i>is</i> a rational multiple '
                  'of π.', X0, fy, CW, foot) - 3
     para(c, '<super>§</super> Since tan <i>θ</i> = ½, 2 + <i>i</i> = √5 '
@@ -529,9 +528,9 @@ def page_two(c):
     c.drawCentredString(X0 + sc, dy - 1.6 * sc - 12, 'domino → 15 dominoes + 10 kites')
     c.drawCentredString(X0 + 3 * sc + 24, dy - 1.6 * sc - 12, 'kite → 12 dominoes + 13 kites')
     tx = X0 + 4 * sc + 40
-    para(c, 'On the wall, triangles are paired across their hypotenuses: a <i>domino</i> is '
-            'a whole 3″ × 6″ tile, a <i>kite</i> is two mirror-image half-tiles. Taking two '
-            'pinwheel generations at once gives a substitution that inflates by 5, shown at '
+    para(c, 'Triangles can be paired across their hypotenuses to form <i>dominos</i> '
+            '(a whole 3″ × 6″ tile) and <i>kites</i> (two mirror-image half-tiles). Taking two '
+            'pinwheel generations at once, each of which inflates by √5, gives a substitution that inflates by 5, shown at '
             'left. Children of a domino are numbered 0–12 (pieces swapped by its half-turn '
             'symmetry share a number); children of a kite, 13–37.',
          tx, y - 14, X1 - tx, small)
