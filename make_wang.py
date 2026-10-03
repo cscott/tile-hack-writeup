@@ -572,6 +572,17 @@ def page_one(c, gap=0.0):
     c.drawCentredString(X0 + fig_w / 2, fy - len(rows) * sz - 10,
                         f'A at {a1} and {a2} force S to {a1 + a2}')
     tx = X0 + fig_w + 16
+    n_sum = len(wt.SUM_TILES)
+    st_gap = 3.0
+    st = (X1 - tx - (n_sum - 1) * st_gap) / n_sum
+    sy = y - 12
+    for k, t in enumerate(wt.SUM_TILES):
+        cx = tx + k * (st + st_gap) + st / 2
+        draw_wang_tile(c, wt.sum_tile(t), View(cx, sy - st / 2, st), 0, 0)
+        if t[4]:
+            c.setFont('Serif-Bold', 7)
+            c.setFillColor(SLATE)
+            c.drawCentredString(cx, sy - st - 8, '★' if t[4] == '*' else t[4])
     yb = para(c, 'Tiles can do arithmetic because the forced tiling carries information. '
                  'This tiling fills a quarter plane whose top and left edges '
                  'must be black. Only <b>★</b> fits in the corner, place the <b>A</b> tiles at your input values, and the rest follows. In '
@@ -580,26 +591,33 @@ def page_one(c, gap=0.0):
                  'a red diagonal climbs back from there. The diagonals must '
                  'be equal, so the climb reaches the top at '
                  'column A₁&nbsp;+&nbsp;A₂ where <b>S</b> must be placed.'
-                 , tx, y - 12, X1 - tx, small)
-    n_sum = len(wt.SUM_TILES)
-    st_gap = 3.0
-    st = (X1 - tx - (n_sum - 1) * st_gap) / n_sum
-    sy = yb - 6
-    for k, t in enumerate(wt.SUM_TILES):
-        cx = tx + k * (st + st_gap) + st / 2
-        draw_wang_tile(c, wt.sum_tile(t), View(cx, sy - st / 2, st), 0, 0)
-        if t[4]:
-            c.setFont('Serif-Bold', 7)
-            c.setFillColor(SLATE)
-            c.drawCentredString(cx, sy - st - 8, '★' if t[4] == '*' else t[4])
-    yb = sy - st - 10
+                 , tx, sy - st - 14, X1 - tx, small)
 
     # III. Fibonacci ------------------------------------------------------
     y = min(yb, fy - len(rows) * sz - 14) - 15 - gap
     heading(c, 'III', 'Fibonacci numbers', X0, y, CW, accent=ACCENT)
+    # the 18 tiles, full width, and what they are
+    n = len(ft.TILES)
+    ts = 20.0
+    tg = (CW - n * ts) / (n - 1)
+    ty = y - 12
+    for k, t in enumerate(ft.TILES):
+        cx = X0 + k * (ts + tg) + ts / 2
+        draw_wang_tile(c, t, View(cx, ty - ts / 2, ts), 0, 0)
+        if t.name:
+            c.setFont('Serif-Bold', 7)
+            c.setFillColor(SLATE)
+            c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
+    yb = para(c, 'These 18 tiles have thirteen edge types; as usual edges must match. With the top and '
+                 'left edges black they fill the quarter plane in exactly one way, and since '
+                 'the Fibonacci numbers spread ever further apart, that tiling is aperiodic. '
+                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
+                 'at column 3 instead, and the same machinery produces the Lucas numbers '
+                 '1, 3, 4, 7, 11, 18, 29.', X0, ty - ts - 14, CW, small)
+    # the tiling, with two paragraphs beside it
     cols, nrows = 22, 14
     fs = 11.2
-    fy = y - 24
+    fy = yb - 22
     view = View(X0 + fs / 2, fy - fs / 2, fs)
     rect = (X0, fy - nrows * fs, X0 + cols * fs, fy)
     framed_figure(c, rect, view, cols, nrows, draw_fib)
@@ -618,31 +636,14 @@ def page_one(c, gap=0.0):
                  'to the ray of the next <b>F</b>, at column <i>m</i>. There a charcoal '
                  'staircase climbs back at 45°, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
-                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, y - 12, X1 - tx, small)
-    # the 18 tiles, in a row under the figure
-    n = len(ft.TILES)
-    ts = 20.0
-    tg = (CW - n * ts) / (n - 1)
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, fy + 10, X1 - tx, small)
     # the project's goal, in the space left beside the figure
     tb = para(c, 'Our goal was to achieve an aperiodic tiling for the home using tiles in '
                  'easily obtainable practical shapes. Wang tiles are attractive because the '
                  'aperiodicity is from edge matching rather than shape. This tiling '
                  'achieves our goal with a more pleasant appearance than the Jeandel &amp; Rao '
                  'tile set.', tx, tb - 5, X1 - tx, small)
-    ty = min(rect[1] - 18, tb - 4)
-    for k, t in enumerate(ft.TILES):
-        cx = X0 + k * (ts + tg) + ts / 2
-        draw_wang_tile(c, t, View(cx, ty - ts / 2, ts), 0, 0)
-        if t.name:
-            c.setFont('Serif-Bold', 7)
-            c.setFillColor(SLATE)
-            c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
-    yb = para(c, 'These 18 tiles have thirteen edge types; as usual edges must match. With the top and '
-                 'left edges black they fill the quarter plane in exactly one way, and since '
-                 'the Fibonacci numbers spread ever further apart, that tiling is aperiodic. '
-                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
-                 'at column 3 instead, and the same machinery produces the Lucas numbers '
-                 '1, 3, 4, 7, 11, 18, 29.', X0, ty - ts - 14, CW, small)
+    yb = min(rect[1] - 14, tb)
 
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
                  'is a homophone of <font name="CJK">黃</font>, Wong: a name held by several '
@@ -670,6 +671,29 @@ def page_two(c, gap=0.0, ws=None):
     # IV. The sieve -------------------------------------------------------
     y = 650 - gap
     heading(c, 'IV', 'A prime number sieve', X0, y, CW, accent=ACCENT)
+    # the 43 tiles and what they are, then the wall
+    per_row = 22
+    ts = 17.0
+    tg = (CW - per_row * ts) / (per_row - 1)
+    ty = y - 12
+    BOLD = {'*', 'p', 'c', 'B*'}          # the tiles the text talks about
+    for k, t in enumerate(wt.TILES):
+        r, q = divmod(k, per_row)
+        cx = X0 + q * (ts + tg) + ts / 2
+        cy = ty - r * (ts + 11) - ts / 2
+        draw_wang_tile(c, t, View(cx, cy, ts), 0, 0)
+        if t.name in BOLD:
+            c.setFont('Serif-Bold', 6.6)
+            c.setFillColor(SLATE)
+        else:
+            c.setFont('Serif', 5.4)
+            c.setFillColor(GREY_T)
+        c.drawCentredString(cx, cy - ts / 2 - 6, '★' if t.name == '*' else t.name)
+    yb = ty - 2 * (ts + 11) - 1
+    yb = para(c, 'The 43 tiles have 15 edge types; edges must match, and top and left edges must be black. '
+                 'Given these constraints, the tiles fill '
+                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic since its boxes '
+                 'keep growing and the primes never repeat.', X0, yb, CW, small)
     yb = para(c, 'The wall in this room is an aperiodic tiling with a set of 43 Wang tiles. '
                  'Each edge type is shown by a tile color plus a pattern of etched lines, and '
                  'a run of matching edges is laid as a single subway tile set on the diagonal. '
@@ -682,7 +706,7 @@ def page_two(c, gap=0.0, ws=None):
                  'marks a prime; if it hits an edge, it turns into a thin line marking a '
                  'composite. (Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
                  'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19.',
-              X0, y - 12, CW, small)
+              X0, yb - 6, CW, small)
     u0, v0, u1, v1 = WALL['wall_units']
     ws = ws or WALL_SCALE
     wy = yb - 20 - gap
@@ -697,27 +721,7 @@ def page_two(c, gap=0.0, ws=None):
     c.setFillColor(GREY_T)
     c.drawCentredString(X0 + CW / 2, rect[1] - 10,
                         'the Wang tiling of the wall: columns 1–20, top 15 rows')
-
-    # V. The tiles --------------------------------------------------------
-    y = rect[1] - 18 - 15 - gap
-    heading(c, 'V', 'The 43 tiles', X0, y, CW, accent=ACCENT)
-    per_row = 22
-    ts = 17.0
-    tg = (CW - per_row * ts) / (per_row - 1)
-    ty = y - 12
-    for k, t in enumerate(wt.TILES):
-        r, q = divmod(k, per_row)
-        cx = X0 + q * (ts + tg) + ts / 2
-        cy = ty - r * (ts + 11) - ts / 2
-        draw_wang_tile(c, t, View(cx, cy, ts), 0, 0)
-        c.setFont('Serif', 5.4)
-        c.setFillColor(GREY_T)
-        c.drawCentredString(cx, cy - ts / 2 - 6, t.name)
-    yb = ty - 2 * (ts + 11) - 1
-    fb = para(c, 'The 43 tiles have 15 edge types; edges must match, and top and left edges must be black. '
-                 'Given these constraints, the tiles fill '
-                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic since its boxes '
-                 'keep growing and the primes never repeat.', X0, yb, CW, small)
+    fb = rect[1] - 14
     if fb < 80:
         print('warning: page 2 text runs into the footer by %.1f pt' % (80 - fb))
     footer(c, 'Tile set PRIME2b from github.com/cscott/tile-hack (wangprime.js).',
@@ -750,5 +754,5 @@ if __name__ == '__main__':
     fbs = build(ws=ws)
     print('wall figure at %.1f pt per tile; free space:' % ws,
           [round(fb - FOOTER_TOP - SLACK, 1) for fb in fbs])
-    gaps = tuple(max(0.0, (fb - FOOTER_TOP - SLACK) / n) for fb, n in zip(fbs, (3, 3)))
+    gaps = tuple(max(0.0, (fb - FOOTER_TOP - SLACK) / n) for fb, n in zip(fbs, (3, 2)))
     build(gaps=gaps, ws=ws)
