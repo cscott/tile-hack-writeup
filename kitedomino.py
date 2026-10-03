@@ -190,7 +190,7 @@ def leaf_polygons(kind, grout=True):
     return [t1, t2]
 
 
-def tiles(perm=BATH_STYLE, ncolors=3, level=2, matrix=None, grout=True):
+def tiles(perm=BATH_STYLE, ncolors=3, level=2, matrix=None, grout=True, color_offset=0):
     """Yield (kind, colour_index, [polygon, ...]) for every physical piece."""
     style = Style(perm, ncolors)
     M0 = WALL_MATRIX if matrix is None else matrix
@@ -201,7 +201,7 @@ def tiles(perm=BATH_STYLE, ncolors=3, level=2, matrix=None, grout=True):
             P = np.array([[x, y, 1.0] for x, y in poly]).T
             Q = (Mt @ P)[:2].T
             polys.append([tuple(q) for q in Q])
-        yield kind, c % ncolors, polys
+        yield kind, (c + color_offset) % ncolors, polys
 
 
 def on(*bits):
@@ -222,7 +222,7 @@ GALLERY = [
     (on(9, 10), 'chomp chomp', False),
     (253952, 'tetris Z piece', True),
     (on(14, 15, 18, 22, 13, 26, 32), 'rocket ships', True),
-    (on(0, 5, 6, 11, 12), 'simple worms (best)', True),
+    (on(0, 5, 6, 11, 12), 'simple worms', True),
     (on(0, 5, 6, 11, 12, 4), 'bracket worms', True),
     (on(16, 17, 21, 25), 'simple stars', False),
     (on(0, 12, 8, 1), 'z snake', True),

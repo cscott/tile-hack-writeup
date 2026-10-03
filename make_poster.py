@@ -491,12 +491,12 @@ def draw_children(c, kind, x, y, scale):
         c.drawCentredString(cx, cy - 2, str(n))
 
 
-def draw_supertile(c, perm, x, y, w, ncolors=2):
+def draw_supertile(c, perm, x, y, w, ncolors=2, color_offset=0):
     """A level-2 domino (625 pieces) with grout, lower-left corner at (x, y)."""
     h = w / 2
     c.setFillColor(GROUT)
     c.rect(x, y, w, h, stroke=0, fill=1)
-    for kind, col, polys in kd.tiles(perm, ncolors, level=2, matrix=kd.S(w / 2)):
+    for kind, col, polys in kd.tiles(perm, ncolors, level=2, matrix=kd.S(w / 2), color_offset=color_offset):
         for pg in polys:
             poly(c, [(x + px, y + h - py) for px, py in pg], fill=TILES[col])
 
@@ -506,12 +506,23 @@ def bits(perm):
 
 
 # the bathroom first, then favourites from mksvg.js
-GALLERY_PICKS = [2560, kd.on(0, 1, 2, 6, 7, 8, 9), kd.on(0, 1, 6, 8), 62, 253952,
-                 kd.on(14, 15, 18, 22, 13, 26, 32), kd.on(0, 5, 6, 11, 12),
-                 kd.on(0, 5, 6, 11, 12, 4), kd.on(0, 12, 8, 1),
-                 kd.on(0, 6, 8, 12, 19, 23, 16, 31, 37), kd.on(0, 6, 12, 34, 35, 17, 4, 5),
+GALLERY_PICKS = [2560,
+                 kd.on(0, 1, 2, 6, 7, 8, 9),
+                 kd.on(0,1,6,7,8), # massachusetts
+                 #kd.on(0, 1, 6, 8), # whip
+                 62,
+                 253952,
+                 kd.on(14, 15, 18, 22, 13, 26, 32),
+                 kd.on(0, 5, 6, 11, 12),
+                 kd.on(0, 5, 6, 11, 12, 4),
+                 kd.on(0, 12, 8, 1),
+                 kd.on(0, 6, 8, 12, 19, 23, 16, 31, 37),
+                 #kd.on(0, 6, 12, 34, 35, 17, 4, 5), # worms 3
+                 kd.on(9,10), #chomp, chomp
                  kd.on(0, 6, 7, 9, 10, 3)]
-
+COLOR_OFFSET = {}
+COLOR_OFFSET[kd.on(0, 6, 7, 9, 10, 3)] = 1
+COLOR_OFFSET[kd.on(0, 5, 6, 11, 12)] = 1
 
 def page_two(c):
     new_page(c)
@@ -551,11 +562,12 @@ def page_two(c):
     top = y3 - 12
     names = {p: n for p, n, f in kd.GALLERY}
     names[2560] = 'kites (this wall)'
+    names[kd.on(0, 6, 8, 12, 19, 23, 16, 31, 37)] = 'worms 2e / hidden W'
     for i, perm in enumerate(GALLERY_PICKS):
         r, k = divmod(i, cols)
         x = X0 + k * (cw + gx)
         yb = top - (r + 1) * ch - r * 19
-        draw_supertile(c, perm, x, yb, cw)
+        draw_supertile(c, perm, x, yb, cw, color_offset=COLOR_OFFSET.get(perm, 0))
         c.setStrokeColor(SLATE)
         c.setLineWidth(1.4 if perm == 2560 else 0.6)
         c.rect(x, yb, cw, ch, stroke=1, fill=0)
