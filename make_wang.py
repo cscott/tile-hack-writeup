@@ -576,12 +576,7 @@ def page_one(c, gap=0.0):
                  'whether a set tiles the plane is undecidable. Along the way he found the '
                  'first <i>aperiodic</i> set, 20,426 tiles that tile the plane but never '
                  'repeat. At right is the smallest aperiodic set possible: 11 tiles with 4 unique edge '
-                 'labels (Jeandel &amp; Rao, 2015). '
-'Our goal is to achieve an aperiodic tiling for the home using tiles in '
-                 'easily obtainable practical shapes. Wang tiles are attractive because the '
-                 'aperiodicity is from edge matching rather than shape. The Jeandel &amp; Rao '
-                 'tile set thus achieves our goal.'
-              '', X0, y - 12, tw, small)
+                 'labels (Jeandel &amp; Rao, 2015).', X0, y - 12, tw, small)
     draw_jeandel_rao(c, X1 - jr_col + (jr_col - jr_w) / 2, y - 14, jr_size, jr_gap)
     py = y - 14 - 2 * jr_size - jr_gap - 6
     pb = draw_jr_patch(c, X1 - jr_col, py, jr_col)
@@ -589,9 +584,14 @@ def page_one(c, gap=0.0):
     c.setFillColor(GREY_T)
     c.drawCentredString(X1 - jr_col / 2, pb - 10, 'a minimal aperiodic set, and a patch of its tiling')
     jr_bottom = pb - 14
+    # second paragraph, full width, below the text and the tile column
+    yb = para(c, 'Our goal is to achieve an aperiodic tiling for the home using tiles in '
+                 'easily obtainable practical shapes. Wang tiles are attractive because the '
+                 'aperiodicity is from edge matching rather than shape. The Jeandel &amp; Rao '
+                 'tile set thus achieves our goal.', X0, min(yb, jr_bottom) - 6, CW, small)
 
     # II. Computing a sum -------------------------------------------------
-    y = min(yb, jr_bottom) - 15 - gap
+    y = yb - 15 - gap
     heading(c, 'II', 'Tiles that add', X0, y, CW, accent=ACCENT)
     sz = 13.0
     a1, a2 = 4, 7
@@ -638,8 +638,7 @@ def page_one(c, gap=0.0):
             c.setFont('Serif-Bold', 7)
             c.setFillColor(SLATE)
             c.drawCentredString(cx, ty - ts - 8, t.name.replace("''", '″').replace("'", '′'))
-    yb = para(c, ''
-                 '', X0, ty - ts - 14, CW, small)
+    yb = ty - ts - 10                    # just below the tile labels
     # the tiling, with two paragraphs beside it
     cols, nrows = 22, 14
     fs = 11.2
