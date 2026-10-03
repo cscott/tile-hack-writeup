@@ -655,18 +655,21 @@ def page_one(c, gap=0.0):
     tx = rect[2] + 14
     tb = para(c, ''
               'By extending the previous tiles we can generate the Fibonacci numbers, each the sum of the two before. '
-              'The tiling is aperiodic because the Fibonacci numbers spread out, so this is another tiling which achieves our goal.'
-              '', tx, fy + 10, X1 - tx, small)
-    tb = para(c, ''
-              'This set of 18 tiles have 9 distinct edge labels; top and left borders are constrained to be black as before. '
+              'This set of 18 Wang tiles have 9 distinct edge labels; top and left borders are constrained to be black as before. '
               'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
                  'and 2.<super>‡</super> Every <b>F</b> sends an etched line down. A long charcoal '
-                 'diagonal leaves the corner at 45°, and where it meets the line of the '
+                 'diagonal leaves the corner, and where it meets the line of the '
                  '<b>F</b> at column <i>n</i>, at depth <i>n</i>, the line turns and runs right '
                  'to the descending line of the next <b>F</b>, at column <i>m</i>. There a charcoal '
-                 'staircase climbs back at 45°, rising <i>n</i> rows '
+                 'staircase climbs back up, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
-                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, tb - 5, X1 - tx, small)
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.'
+              '', tx, fy + 10, X1 - tx, small)
+    tb = para(c, ''
+              'The tiling is aperiodic because the Fibonacci numbers spread out, so this is another tiling which would achieve our goal. '
+              'Using subway tiles oriented differently above and below the '
+              'long charcoal diagonal adds visual interest.'
+              '', tx, tb - 5, X1 - tx, small)
     yb = min(rect[1] - 14, tb)
 
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
@@ -716,7 +719,7 @@ def page_two(c, gap=0.0, ws=None):
             c.setFillColor(GREY_T)
         c.drawCentredString(cx, cy - ts / 2 - 6, '★' if t.name == '*' else t.name)
     yb = ty - 2 * (ts + 11) - 1
-    yb = para(c, 'The wall in this room is an aperiodic tiling with a set of 43 Wang tiles with 15 distinct edge labels. '
+    yb = para(c, 'The wall in this room is an aperiodic tiling using a set of 43 Wang tiles with 15 distinct edge labels. '
                  'Each edge label is shown by a tile color plus a pattern of etched lines, and '
                  'a run of matching colors is laid as a single subway tile set on the diagonal. '
                  'Tiles can not be rotated or reflected, edges must match, and the top and left borders must be black. '
