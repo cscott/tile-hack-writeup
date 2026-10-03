@@ -248,26 +248,90 @@ def draw_subway(c, x, y, w):
     c.restoreState()
 
 
+# One shade per tilt k (tile direction k*theta, modulo a quarter-turn), the
+# same in every panel; the panel captions carry the key.
+TILT_SHADE = {-1: TILE_GRAY, 0: BLUE_L, 1: TILE_BLUE, 2: BLUE_D, 3: HexColor('#5A6F8E')}
+
+
+def tilt_label(k):
+    return {0: '0', 1: 'θ', -1: '−θ'}.get(k, f'{k}θ')
+
+
+def long_legs(c, tris, lw):
+    """Mark each triangle's long leg (its first two vertices) in bold."""
+    c.saveState()
+    c.setStrokeColor(SLATE)
+    c.setLineWidth(lw)
+    c.setLineCap(1)
+    for pg in tris:
+        c.line(*pg[0], *pg[1])
+    c.restoreState()
+
+
 def draw_level1(c, x, y, size):
+    """One generation: all five children are tilted by theta.  The two
+    unmirrored children form an uncut subway tile, so their shared
+    hypotenuse is drawn dashed."""
     L, t = place(x, y, size)
-    fills = [BLUE_L, LIGHT, LIGHT, TILE_BLUE, TILE_BLUE]
-    for i, (l2, t2) in enumerate(CH_AFF):
-        poly(c, verts(L @ l2, L @ t2 + t), fill=fills[i])
-    for l2, t2 in CH_AFF:
-        poly(c, verts(L @ l2, L @ t2 + t), stroke=SLATE, lw=0.7)
+    kids = [verts(L @ l2, L @ t2 + t) for l2, t2 in CH_AFF]
+    for pg in kids:
+        poly(c, pg, fill=TILT_SHADE[1])
+    for pg in kids:
+        poly(c, pg, stroke=SLATE, lw=0.7)
+    long_legs(c, kids + [verts(L, t)], 2.2)
+    a, b = L @ np.array([1.0, 0.0]) + t, L @ np.array([1.6, 0.8]) + t   # children 3 | 4
+    c.setStrokeColor(TILT_SHADE[1])
+    c.setLineWidth(1.2)
+    c.line(*a, *b)
+    c.setStrokeColor(SLATE)
+    c.setLineWidth(0.6)
+    c.setDash(2, 2)
+    c.line(*a, *b)
+    c.setDash()
     poly(c, verts(L, t), stroke=SLATE, lw=1.2)
 
 
 def draw_level(c, x, y, size, n):
+    """n generations, each tile shaded by its tilt (TILT_SHADE).  Returns
+    the tilts present, in increasing order."""
     L, t = place(x, y, size)
-    ramp = [LIGHT, BLUE_L, TILE_BLUE, BLUE_D]
-    ks = sorted({orient_k(Lk) for Lk, tk, p in subdivide(L, t, n)})
-    cmap = {k: ramp[i] for i, k in enumerate(ks)}
-    for Lk, tk, p in subdivide(L, t, n):
-        poly(c, verts(Lk, tk), fill=cmap[orient_k(Lk)])
-    for Lk, tk, p in subdivide(L, t, n):
+    tiles = list(subdivide(L, t, n))
+    for Lk, tk, p in tiles:
+        poly(c, verts(Lk, tk), fill=TILT_SHADE[orient_k(Lk)])
+    for Lk, tk, p in tiles:
         poly(c, verts(Lk, tk), stroke=SLATE, lw=0.35 if n > 2 else 0.5)
     poly(c, verts(L, t), stroke=SLATE, lw=1.1)
+    long_legs(c, [verts(Lk, tk) for Lk, tk, p in tiles] + [verts(L, t)], 1.5 if n == 2 else 1.0)
+    return sorted({orient_k(Lk) for Lk, tk, p in tiles})
+
+
+def swatch_caption(c, cx, y, parts, size=8):
+    """Centred caption mixing text and shade swatches: parts are strings or
+    ('swatch', colour)."""
+    font = 'Serif-Italic'
+    sw = size * 0.8
+    widths = [c.stringWidth(p, font, size) if isinstance(p, str) else sw + 2.5 for p in parts]
+    x = cx - sum(widths) / 2
+    for p, w in zip(parts, widths):
+        if isinstance(p, str):
+            c.setFont(font, size)
+            c.setFillColor(GREY_T)
+            c.drawString(x, y, p)
+        else:
+            c.setFillColor(p[1])
+            c.setStrokeColor(SLATE)
+            c.setLineWidth(0.4)
+            c.rect(x + 0.5, y - 0.5, sw, sw, stroke=1, fill=1)
+        x += w
+
+
+def tilt_parts(prefix, ks):
+    parts = [prefix]
+    for i, k in enumerate(ks):
+        if i:
+            parts.append(' or ' if i == len(ks) - 1 else ', ')
+        parts += [('swatch', TILT_SHADE[k]), tilt_label(k)]
+    return parts
 
 
 def draw_dial(c, cx, cy, R, N=72):
@@ -309,7 +373,7 @@ def page_one(c):
     c.setFont('Serif-Italic', 7.8)
     c.setFillColor(GREY_T)
     c.drawCentredString(X0 + 78, y - 117, 'cut along either diagonal')
-    para(c, 'Most aperiodic tilings are impractical to build. Penrose tiles need '
+    tb = para(c, 'Most aperiodic tilings are impractical to build. Penrose tiles need '
             'golden-ratio proportions and 36° and 72° angles, so they must be custom-made. '
             'The pinwheel tiling needs only a standard 3″ × 6″ subway tile, cut once along '
             'a diagonal; the triangle’s smallest angle is <i>θ</i> = arctan ½ ≈ 26.565°. '
@@ -323,39 +387,41 @@ def page_one(c):
     gap = (CW - 3 * dsz) / 2
     base = y - 82
     draw_level1(c, X0, base, dsz)
-    draw_level(c, X0 + dsz + gap, base, dsz, 2)
-    draw_level(c, X0 + 2 * (dsz + gap), base, dsz, 3)
-    c.setFont('Serif-Italic', 8)
-    c.setFillColor(GREY_T)
-    labels = ['one generation: 5 tiles', 'two: 25, shaded by direction',
-              'three: 125, shaded by direction']
-    for i, s in enumerate(labels):
-        c.drawCentredString(X0 + i * (dsz + gap) + dsz / 2, base - 12, s)
-    para(c, 'The 2:1 triangle divides exactly into five copies of itself, each scaled by '
+    k2 = draw_level(c, X0 + dsz + gap, base, dsz, 2)
+    k3 = draw_level(c, X0 + 2 * (dsz + gap), base, dsz, 3)
+    captions = [tilt_parts('one generation: 5 tiles, all tilted ', [1]),
+                tilt_parts('two: 25, tilted ', k2),
+                tilt_parts('three: 125, tilted ', k3)]
+    for i, parts in enumerate(captions):
+        swatch_caption(c, X0 + i * (dsz + gap) + dsz / 2, base - 12, parts)
+    pb = para(c, 'The 2:1 triangle divides exactly into five copies of itself, each scaled by '
             '1/√5: the altitude from the right angle splits off one, and the rest divides '
-            'into four, two of which form an uncut subway tile. Enlarge by √5 and repeat: '
+            'into four, two of which form an uncut subway tile.<super>‡</super> Enlarge by √5 and repeat: '
             '1 tile becomes 5, then 25, then 125, covering ever larger regions of the plane. This tiling was discovered by John Conway. '
             'Charles Radin (1994) showed that this tiling can be enforced with decorated '
             'copies of the tile and local matching rules.',
          X0, base - 22, CW)
 
     # III. irrational twist
-    y = 338
+    y = min(338, pb - 22)
     heading(c, 'III', 'The irrational twist', X0, y, CW)
-    dial_w = 128
+    dial_w = 112
     steps = [
-        '<b>1.</b> Each child’s edges are tilted by exactly <i>θ</i> relative to its '
-        'parent’s edges (counting directions modulo a quarter-turn). Three children are '
-        'mirror images of the parent; two are not.',
-        '<b>2.</b> Mirrored and unmirrored tilts compose differently, so after <i>n</i> '
-        'generations tiles point in directions <i>kθ</i> for <i>k</i> = <i>n</i>, '
-        '<i>n</i>−2, …, −(<i>n</i>−2). Some tile is turned through <i>nθ</i>.',
-        '<b>3.</b> arctan ½ is not a rational multiple of π,<super>‡</super> so the angles '
-        '<i>nθ</i> never coincide modulo a quarter-turn. Every pinwheel tiling contains '
-        'supertiles of every generation, hence tiles pointing in infinitely many '
-        'directions; Radin showed they are uniformly distributed around the circle.',
-        '<b>4.</b> A periodic tiling, invariant under two independent translations, is one '
-        'finite patch repeated forever, so it shows only finitely many directions. '
+        '<b>1.</b> Each child’s long leg (marked in bold above) is tilted by exactly '
+        '<i>θ</i> from its parent’s; perpendicular directions count as the same. '
+        'Three children are mirror images of the parent; two are not.',
+        '<b>2.</b> A mirrored tile’s children turn the opposite way from an unmirrored '
+        'tile’s, so each generation adds ±<i>θ</i>. After <i>n</i> generations tiles thus '
+        'point in directions −(<i>n</i>−2)<i>θ</i>, −(<i>n</i>−4)<i>θ</i>, …, '
+        '(<i>n</i>−2)<i>θ</i>, <i>nθ</i>.',
+        '<b>3.</b> A periodic tiling is one finite patch repeated forever, so it can only '
+        'have finitely many directions. As long as the directions <i>kθ</i> are all '
+        'distinct, the tiling must be aperiodic. (If no child were mirrored, every tile '
+        'would point in direction <i>nθ</i>, and the directions would be finite!)',
+        '<b>4.</b> arctan ½ is not a rational multiple of π,<super>§</super> so no two '
+        'directions <i>kθ</i> coincide, even up to a multiple of 90°. A pinwheel tiling '
+        'contains supertiles of every generation, so it has infinitely many directions '
+        '(uniformly distributed, as Radin showed). '
         '<b>Therefore no pinwheel tiling is periodic.</b>',
     ]
     yy = y - 12
@@ -368,7 +434,7 @@ def page_one(c):
     c.drawCentredString(dcx, y - 131, 'directions nθ never repeat')
 
     # the one-line moral
-    my = min(yy, y - 136) - 18
+    my = min(yy, y - 136) - 15
     c.setStrokeColor(TILE_BLUE)
     c.setLineWidth(0.5)
     c.line(X0 + 40, my + 15, X1 - 40, my + 15)
@@ -378,14 +444,22 @@ def page_one(c):
     c.drawCentredString(W / 2, my, 'It never repeats because arctan ½ is not a rational multiple of π.')
 
     # footnotes
-    fy = my - 20
+    fy = my - 17
     fy = para(c, '<super>†</super> <i>For the attentive viewer:</i> the tiles are exactly '
                  '2 : 1, but the grout joints are not uniform. For tile plus grout to stay '
                  'on a 2 : 1 grid, 6″ + <i>g</i><sub>end</sub> = 2(3″ + '
                  '<i>g</i><sub>side</sub>), so <i>g</i><sub>end</sub> = '
                  '2<i>g</i><sub>side</sub>: ⅛″ joints along the long sides, but ¼″ at the '
                  'short ends. Can you see the difference?', X0, fy, CW, foot) - 3
-    para(c, '<super>‡</super> Since tan <i>θ</i> = ½, 2 + <i>i</i> = √5 '
+    fy = para(c, '<super>‡</super> The same works for any <i>N</i> : 1 tile. The altitude cuts off one '
+                 'copy; the rest is the triangle enlarged <i>N</i> times, which divides into '
+                 '<i>N</i>² copies (<i>N</i> along the hypotenuse and <i>N</i>(<i>N</i>−1)/2 whole '
+                 'tiles), so the triangle divides into <i>N</i>² + 1 copies scaled by '
+                 '1/√(<i>N</i>² + 1). For each, <i>θ</i> = arctan(1/<i>N</i>): a 4″ × 12″ tile '
+                 'gives a 10-piece pinwheel, a 2″ × 8″ tile a 17-piece one. <i>N</i> = 1 is '
+                 'degenerate and periodic, since arctan 1 = π/4 <i>is</i> a rational multiple '
+                 'of π.', X0, fy, CW, foot) - 3
+    para(c, '<super>§</super> Since tan <i>θ</i> = ½, 2 + <i>i</i> = √5 '
             '<i>e</i><super><i>iθ</i></super>. If <i>θ</i> = (<i>p</i>/<i>q</i>)π, then '
             '(2 + <i>i</i>)<super>2<i>q</i></super> = 5<super><i>q</i></super> = '
             '(2 + <i>i</i>)<super><i>q</i></super>(2 − <i>i</i>)<super><i>q</i></super>, so '

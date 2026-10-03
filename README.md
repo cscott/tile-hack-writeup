@@ -50,6 +50,7 @@ glyphs used here (θ π √ ℤ ½ ⅛ ¼) will do.
 
 - **Text:** edit the `para(...)` calls in `page_one()` / `page_two()`.
 - **Gallery:** edit `GALLERY_PICKS` in `make_poster.py`. Names come from `kitedomino.GALLERY`; add entries there for new masks. `kitedomino.on(0, 5, 6, ...)` builds a mask from child numbers.
+- **Tilt shading (page 1, section II):** `TILT_SHADE` in `make_poster.py` gives one shade per tile direction *k*θ (modulo a quarter-turn), the same in every panel; the captions draw the matching swatches. Every triangle's long leg (the side of length 2), and the big triangle's, is drawn bold (`long_legs()`), since that is the edge whose direction is measured. In the first panel all five children are tilted θ, and the dashed line marks the uncut subway tile.
 - **Colors:** the tile colors are `kitedomino.BATH_COLORS`, taken from `mksvg.js`. The page palette is at the top of `make_poster.py`.
 - **Border scale:** `WALL_RATIO` (currently 1:24). The border is the level-3 supertile that contains the wall as its child 7, so it is the wall's own tiling extended outward; it fills the page at 1:24 or larger. The gallery cells are about 1:77.
 
