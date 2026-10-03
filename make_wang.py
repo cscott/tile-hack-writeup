@@ -339,11 +339,12 @@ EXTRA = missing_triangles(PIECES)
 LINES = grid_lines()
 
 
-def _triangle_regions():
+def _triangle_regions(grid=None):
+    grid = grid or GRID
     out = {}
-    for i in range(GRID.w):
-        for j in range(GRID.h):
-            t = GRID.g[i][j]
+    for i in range(grid.w):
+        for j in range(grid.h):
+            t = grid.g[i][j]
             for side in wt.SIDES:
                 out.setdefault(tile_glaze(t, side), []).append(side_triangle(side, i, j))
     return out
@@ -352,10 +353,11 @@ def _triangle_regions():
 TRIANGLES = _triangle_regions()
 
 
-def draw_wall(c, view, clip, built=True, grout=None):
+def draw_wall(c, view, clip, built=True, grout=None, grid=None):
     """Draw the wall clipped to a page rect.  built=True: the tiles as laid,
     with grout (from the cutting guide); built=False: the bare Wang tiling,
-    four glazed triangles per square, no grout."""
+    four glazed triangles per square, no grout (from `grid`, default the
+    designed 21 x 27 tiling)."""
     x0, y0, x1, y1 = clip
     c.saveState()
     p = c.beginPath()
@@ -363,15 +365,19 @@ def draw_wall(c, view, clip, built=True, grout=None):
     c.clipPath(p, stroke=0, fill=0)
     c.setFillColor(grout or GROUT)
     c.rect(x0, y0, x1 - x0, y1 - y0, stroke=0, fill=1)
+    lines = LINES
     if built:
         regions = {g: PIECES.get(g, []) + EXTRA.get(g, []) for g in GLAZE}
-    else:
+    elif grid is None or grid is GRID:
         regions = TRIANGLES
+    else:
+        regions = _triangle_regions(grid)
+        lines = [ln for i in range(grid.w) for j in range(grid.h) for ln in tile_lines(grid.g[i][j], i, j)]
     for glaze, polys in regions.items():
         if polys:
             c.setFillColor(GLAZE[glaze])
             c.drawPath(path_of(c, polys, view), stroke=0, fill=1, fillMode=FILL_EVEN_ODD)
-    draw_lines_by_glaze(c, regions, LINES, view)
+    draw_lines_by_glaze(c, regions, lines, view)
     c.restoreState()
 
 
@@ -736,20 +742,33 @@ def page_two(c, gap=0.0, ws=None):
                  'composite. (Even numbers get no ray; 2 has a tile of its own, <b>B*</b>.) The thick '
                  'rays reach the red top row at 2, 3, 5, 7, 11, 13, 17 and 19, marked by tile <b>p</b>. Composite numbers use tile <b>c</b>.',
               X0, yb - 6, CW, small)
-    u0, v0, u1, v1 = WALL['wall_units']
+    u0, v0, u1, v1 = FIG_UNITS
     ws = ws or WALL_SCALE
     wy = yb - 20 - gap
     ww = (u1 - u0) * ws
     wx = X0 + (CW - ww) / 2
     view = View(wx, wy, ws, u0, v0)
     rect = (wx, wy - (v1 - v0) * ws, wx + ww, wy)
-    framed_figure(c, rect, view, int(np.ceil(u1)) + 1, int(np.ceil(v1)) + 1,
-                  lambda c, v, r: draw_wall(c, v, r, built=False))
-    column_numbers(c, view, wy, 20, lambda i: wt.is_prime(i + 1), big=8.4, small_=7.2)
+    # the designed tiling is 21 x 27; solve a larger one if the figure needs it
+    # (its first 21 columns are identical to the designed tiling)
+    fig_grid = wt.bathroom_grid(max(GRID.w, FIG_COLS), max(GRID.h, FIG_ROWS))
+    framed_figure(c, rect, view, FIG_COLS, FIG_ROWS,
+                  lambda c, v, r: draw_wall(c, v, r, built=False, grid=fig_grid))
+    # the part actually on the wall, dashed
+    wu0, wv0, wu1, wv1 = WALL['wall_units']
+    (ax, ay), (bx, by) = view((wu0, wv0)), view((wu1, wv1))
+    c.saveState()
+    c.setStrokeColor(SLATE)
+    c.setLineWidth(0.9)
+    c.setDash(3, 2)
+    c.rect(ax, by, bx - ax, ay - by, stroke=1, fill=0)
+    c.restoreState()
+    column_numbers(c, view, wy, FIG_COLS, lambda i: wt.is_prime(i + 1), big=8.4, small_=7.2)
     c.setFont('Serif-Italic', 7.4)
     c.setFillColor(GREY_T)
     c.drawCentredString(X0 + CW / 2, rect[1] - 10,
-                        'the Wang tiling of the wall: columns 1–20, top 15 rows')
+                        f'the Wang tiling, columns 1–{FIG_COLS} and the top {FIG_ROWS} rows; the wall in this '
+                        'room is the first 20 columns and 15 rows (dashed)')
     fb = rect[1] - 14
     if fb < 80:
         print('warning: page 2 text runs into the footer by %.1f pt' % (80 - fb))
@@ -759,7 +778,9 @@ def page_two(c, gap=0.0, ws=None):
     return fb
 
 
-WALL_SCALE = 21.0       # points per Wang tile in the page-2 figure; main() grows it to fit
+WALL_SCALE = 21.0       # points per Wang tile in the page-2 figure; main() fits it to the page
+FIG_COLS, FIG_ROWS = 25, 18       # page-2 figure: through column 25 = 5 x 5, down to the bottom of the 7-box
+FIG_UNITS = (-0.5, -0.5, FIG_COLS - 0.5, FIG_ROWS - 0.5)
 
 
 def build(path='wang-tiling.pdf', gaps=(0.0, 0.0), ws=None):
@@ -773,11 +794,11 @@ def build(path='wang-tiling.pdf', gaps=(0.0, 0.0), ws=None):
 
 
 if __name__ == '__main__':
-    # page 2: grow the wall figure into the free space (up to the full text
-    # width); then, on both pages, spread what is left evenly above the
+    # page 2: fit the figure to the free space (up to the full text width);
+    # then, on both pages, spread what is left evenly above the
     # headings (and the page-2 figure)
     FOOTER_TOP, SLACK = 76, 8
-    u0, v0, u1, v1 = WALL['wall_units']
+    u0, v0, u1, v1 = FIG_UNITS
     fbs = build()
     ws = min(CW / (u1 - u0), WALL_SCALE + (fbs[1] - FOOTER_TOP - SLACK - 6) / (v1 - v0))
     fbs = build(ws=ws)
