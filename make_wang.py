@@ -655,27 +655,26 @@ def page_one(c, gap=0.0):
     tx = rect[2] + 14
     tb = para(c, ''
               'By extending the previous tiles we can generate the Fibonacci numbers, each the sum of the two before. '
-              'The tiling is aperiodic because the Fibonacci numbers spread out, so this is another tiling which achieves our goal. '
+              'The tiling is aperiodic because the Fibonacci numbers spread out, so this is another tiling which achieves our goal.'
+              '', tx, fy + 10, X1 - tx, small)
+    tb = para(c, ''
               'This set of 18 tiles have 9 distinct edge labels; top and left borders are constrained to be black as before. '
               'The <b>F′</b> and <b>F″</b> tiles in the corner mark the first two numbers, 1 '
-                 'and 2. Every <b>F</b> sends an etched line down. A long charcoal '
+                 'and 2.<super>‡</super> Every <b>F</b> sends an etched line down. A long charcoal '
                  'diagonal leaves the corner at 45°, and where it meets the line of the '
                  '<b>F</b> at column <i>n</i>, at depth <i>n</i>, the line turns and runs right '
                  'to the descending line of the next <b>F</b>, at column <i>m</i>. There a charcoal '
                  'staircase climbs back at 45°, rising <i>n</i> rows '
                  'as it moves <i>n</i> columns right, and reaches the top at column '
-                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, fy + 10, X1 - tx, small)
-    # the project's goal, in the space left beside the figure
-    tb = para(c, ''
-                 '<b>F′</b> and <b>F″</b> fix the start: add two tiles that let <b>F″</b> stand '
-                 'at column 3 instead, and the same machinery produces the Lucas numbers '
-                 '1, 3, 4, 7, 11, 18, 29.'
-              '', tx, tb - 5, X1 - tx, small)
+                 '<i>m</i>&nbsp;+&nbsp;<i>n</i>: the next <b>F</b>, which then sends its own ray down.', tx, tb - 5, X1 - tx, small)
     yb = min(rect[1] - 14, tb)
 
     fb = para(c, '<super>†</super> In Cantonese, Wang’s surname <font name="CJK">王</font> '
                  'is a homophone of <font name="CJK">黃</font>, Wong: a name held by several '
                  'members of this home.', X0, yb - 6, CW, foot)
+    fb = para(c, '<super>‡</super> <b>F′</b> and <b>F″</b> fix the start: with two more tiles '
+                 'that let <b>F″</b> stand at column 3 instead, the same machinery produces the '
+                 'Lucas numbers 1, 3, 4, 7, 11, 18, 29.', X0, fb - 2, CW, foot)
     # (Dropped from the poster: Grünbaum & Shephard's Fig. 11.4.2 has three
     # misprints.  Its list of tiles leaves out the one that continues the
     # diagonal, its example drops two of the "6" edge labels in column 3, and
