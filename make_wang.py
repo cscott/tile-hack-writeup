@@ -730,7 +730,7 @@ def page_two(c, gap=0.0, ws=None):
                  'a run of matching colors is laid as a single subway tile set on the diagonal. '
                  'Tiles can not be rotated or reflected, edges must match, and the top and left borders must be black. '
                  'Given these constraints, the tiles fill '
-                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic due to the nature of primes.', X0, yb, CW, small)
+                 'the infinite quarter plane in exactly one way, and that tiling is aperiodic because the gaps between primes never repeat: if they did, with a cycle adding up to <i>P</i>, then <i>p</i>&nbsp;+&nbsp;<i>P</i>, <i>p</i>&nbsp;+&nbsp;2<i>P</i>, … would all be prime, but <i>p</i>&nbsp;+&nbsp;<i>pP</i> = <i>p</i>(1&nbsp;+&nbsp;<i>P</i>) is not.', X0, yb, CW, small)
     yb = para(c, ''
                  'Column <i>n</i> stands for the number <i>n</i>. '
                  'Each odd column sends down an etched line which could be thin or thick. '
