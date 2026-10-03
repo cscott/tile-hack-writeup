@@ -758,9 +758,9 @@ def page_two(c, gap=0.0, ws=None):
     wu0, wv0, wu1, wv1 = WALL['wall_units']
     (ax, ay), (bx, by) = view((wu0, wv0)), view((wu1, wv1))
     c.saveState()
-    c.setStrokeColor(SLATE)
-    c.setLineWidth(0.9)
-    c.setDash(3, 2)
+    c.setStrokeColor(Color(0.25, 0.33, 0.43, alpha=0.35))
+    c.setLineWidth(0.6)
+    c.setDash(1.6, 2.2)
     c.rect(ax, by, bx - ax, ay - by, stroke=1, fill=0)
     c.restoreState()
     column_numbers(c, view, wy, FIG_COLS, lambda i: wt.is_prime(i + 1), big=8.4, small_=7.2)
